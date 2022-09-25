@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include "raylib.h"
 
 int main(void){
@@ -43,6 +44,8 @@ int main(void){
                 flagInicio = 1;
         }else if(IsKeyDown(KEY_F11)){
                 ToggleFullscreen();
+        }else if(IsKeyDown(KEY_ESCAPE)){
+            exit(1);
         }
 
         if(IsKeyDown(KEY_RIGHT)){
