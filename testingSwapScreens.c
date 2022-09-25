@@ -23,7 +23,7 @@ int main(void){
 
     Vector2 vectorImage = {630,200};
     Rectangle sourceRect = {0.0f, 0.0f, (float)frameWidth, (float)frameHeight}; 
-    Rectangle destRect ={screenWidth/2.0f, screenHeight/2.0f, frameWidth*0.5f, frameHeight*0.5f};
+    Rectangle destRect = { screenWidth/2.0f - 64, screenHeight/2.0f - 64, frameWidth*0.5f, frameHeight*0.5f };
     Camera2D camera = {0};
 
     camera.target = (Vector2){destRect.x + 20.0f, destRect.y + 20.0f};
@@ -31,11 +31,13 @@ int main(void){
     camera.rotation = 0.0f;
     camera.zoom = 1.0f;
 
-    Vector2 origin = { (float)frameWidth, (float)frameHeight };
+    Vector2 origin = {0.0f, 0.0f};
 
-    int rotation = 0;    
+    int rotation = 0;
+   
 
     while(!WindowShouldClose()){
+        
 
         if(IsKeyDown(KEY_ENTER)){
                 flagInicio = 1;
@@ -55,10 +57,12 @@ int main(void){
 
         if(flagInicio){
 
-           BeginDrawing();
-                BeginMode2D(camera);
+            BeginDrawing();
+
                     ClearBackground(RAYWHITE);
                     DrawTexturePro(fireTexture, sourceRect, destRect, origin, (float)rotation, WHITE);
+                
+                BeginMode2D(camera);
                 EndMode2D();
                 DrawText("Aqui jaz uma história muito nova\nE muito sofrida...", 400, 150, 50, BLACK);
             EndDrawing(); 
