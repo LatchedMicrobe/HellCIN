@@ -15,14 +15,18 @@ int main(){
 
     while(!WindowShouldClose()){
 
+        if(IsKeyDown(KEY_ENTER)){
+            break;
+        }
+
         BeginDrawing();
-        ClearBackground(RAYWHITE);
+            ClearBackground(RAYWHITE);
 
-        DrawText("HellCIN", 680, 150, 50, BLACK);
-        DrawTextureV(player, (Vector2) {630, 200}, WHITE);
-        DrawTextureV(enter_button, (Vector2) {690, 520}, WHITE);
+            DrawText("HellCIN", 680, 150, 50, BLACK);
+            DrawTextureV(player, (Vector2) {630, 200}, WHITE);
+            DrawTextureV(enter_button, (Vector2) {690, 520}, WHITE);
 
-        EndDrawing();
+            EndDrawing();
     }
 
     UnloadTexture(player);

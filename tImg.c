@@ -15,7 +15,7 @@ int main(void){
         
         ClearBackground(RAYWHITE);
         
-        DrawText("-- Testando Quadradinho --", 800, 380, PURPLE);
+        DrawText("-- Testando Quadradinho --", 800, 380, 50, PURPLE);
         
         EndDrawing();     
         
