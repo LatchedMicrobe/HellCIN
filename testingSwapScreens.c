@@ -8,15 +8,6 @@ int main(void){
     const int screenWidth = 1600;
     const int screenHeight = 800;
 
-    Vector2 vectorImage = {630,200};
-    Rectangle player = {400,150,32,32};
-    Camera2D camera = {0};
-
-    camera.target = (Vector2){player.x + 20.0f, player.y + 20.0f};
-    camera.offset = (Vector2){screenWidth/2.0f,screenHeight/2.0f};
-    camera.rotation = 0.0f;
-    camera.zoom = 1.0f;
-
     InitWindow(screenWidth, screenHeight, "HELLCIN");
 
     SetTargetFPS(60);
@@ -24,7 +15,25 @@ int main(void){
     Texture2D fireTexture = LoadTexture("./Assets/fogo.png");
 
     Texture2D memeTexture = LoadTexture("./Assets/memeMas_helth.png");
+
     Texture2D enter_button = LoadTexture("./Assets/enter.png");
+
+    int frameWidth = fireTexture.width;
+    int frameHeight = fireTexture.height;
+
+    Vector2 vectorImage = {630,200};
+    Rectangle sourceRect = {0.0f, 0.0f, (float)frameWidth, (float)frameHeight}; 
+    Rectangle destRect ={screenWidth/2.0f, screenHeight/2.0f, frameWidth*0.5f, frameHeight*0.5f};
+    Camera2D camera = {0};
+
+    camera.target = (Vector2){destRect.x + 20.0f, destRect.y + 20.0f};
+    camera.offset = (Vector2){screenWidth/2.0f,screenHeight/2.0f};
+    camera.rotation = 0.0f;
+    camera.zoom = 1.0f;
+
+    Vector2 origin = { (float)frameWidth, (float)frameHeight };
+
+    int rotation = 0;    
 
     while(!WindowShouldClose()){
 
@@ -35,13 +44,13 @@ int main(void){
         }
 
         if(IsKeyDown(KEY_RIGHT)){
-            player.x += 2.0;
-        }else if(IsKeyDown(KEY_LEFT)){
-            player.x -= 2.0;
-        }else if(IsKeyDown(KEY_UP)){
-            player.y -= 2.0;
-        }else if(IsKeyDown(KEY_DOWN)){
-            player.y += 2.0;
+            destRect.x += 2.0;
+        }if(IsKeyDown(KEY_LEFT)){
+            destRect.x -= 2.0;
+        }if(IsKeyDown(KEY_UP)){
+            destRect.y -= 2.0;
+        }if(IsKeyDown(KEY_DOWN)){
+            destRect.y += 2.0;
         }
 
         if(flagInicio){
@@ -49,7 +58,7 @@ int main(void){
            BeginDrawing();
                 BeginMode2D(camera);
                     ClearBackground(RAYWHITE);
-                    DrawRectangleRec(player, RED);
+                    DrawTexturePro(fireTexture, sourceRect, destRect, origin, (float)rotation, WHITE);
                 EndMode2D();
                 DrawText("Aqui jaz uma história muito nova\nE muito sofrida...", 400, 150, 50, BLACK);
             EndDrawing(); 
