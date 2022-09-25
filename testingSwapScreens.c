@@ -37,8 +37,7 @@ int main(void){
     int rotation = 0;
    
 
-    while(!WindowShouldClose()){
-        
+    while(!WindowShouldClose()){    
 
         if(IsKeyDown(KEY_ENTER)){
                 flagInicio = 1;
@@ -58,15 +57,28 @@ int main(void){
             destRect.y += 2.0;
         }
 
+        if(destRect.x + destRect.width >= GetScreenWidth()){
+            destRect.x = GetScreenWidth() - destRect.width;
+        }else if(destRect.x <= 0){
+            destRect.x = 0;
+        }
+
+        if(destRect.y + destRect.height >= GetScreenHeight()){
+            destRect.y = GetScreenHeight() - destRect.height;
+        }else if(destRect.y <= 0){
+            destRect.y = 0;
+        }
+
         if(flagInicio){
 
             BeginDrawing();
 
-                    ClearBackground(RAYWHITE);
-                    DrawTexturePro(fireTexture, sourceRect, destRect, origin, (float)rotation, WHITE);
+                ClearBackground(RAYWHITE);
+                DrawTexturePro(fireTexture, sourceRect, destRect, origin, (float)rotation, WHITE);
                 
                 BeginMode2D(camera);
                 EndMode2D();
+
                 DrawText("Aqui jaz uma história muito nova\nE muito sofrida...", 400, 150, 50, BLACK);
             EndDrawing(); 
 
