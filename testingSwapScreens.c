@@ -15,16 +15,18 @@ int main(void){
 
     Texture2D fireTexture = LoadTexture("./Assets/fogo.png");
 
-    Texture2D memeTexture = LoadTexture("./Assets/memeMas_helth.png");
+    Texture2D memeTexture = LoadTexture("./Assets/Mud Guard/Run.png");
 
     Texture2D enter_button = LoadTexture("./Assets/enter.png");
 
-    int frameWidth = fireTexture.width;
-    int frameHeight = fireTexture.height;
+    int frameWidth = memeTexture.width/2;
+    int frameHeight = memeTexture.height/6;
+
 
     Vector2 vectorImage = {630,200};
+
     Rectangle sourceRect = {0.0f, 0.0f, (float)frameWidth, (float)frameHeight}; 
-    Rectangle destRect = { screenWidth/2.0f - 64, screenHeight/2.0f - 64, frameWidth*0.5f, frameHeight*0.5f };
+    Rectangle destRect = {screenWidth/2.0f - 82, screenHeight/2.0f - 46, frameWidth*2.0f, frameHeight*2.0f };
     Camera2D camera = {0};
 
     camera.target = (Vector2){destRect.x + 20.0f, destRect.y + 20.0f};
@@ -34,8 +36,15 @@ int main(void){
 
     Vector2 origin = {0.0f, 0.0f};
 
+    //Rectangle sourceRectEnemy = {0.0f, 0.0f, (float)frameWidth, (float)frameHeight}; 
+    Rectangle destRectEnemy = { screenWidth/2.0f, screenHeight/2.0f, frameWidth*2.25f, frameHeight*2.25f };
+
     int rotation = 0;
-   
+
+
+    int currentframe = 0;
+    int framecounter = 0;
+    int framespeed = 8;
 
     while(!WindowShouldClose()){    
 
@@ -47,16 +56,63 @@ int main(void){
             exit(1);
         }
 
+        framecounter++;
+        
+
         if(IsKeyDown(KEY_RIGHT)){
-            destRect.x += 2.0;
+            destRect.x += 4.0;
+            if(framecounter >= (60/framespeed)){
+                framecounter = 0;
+                currentframe++;
+                if(currentframe > 6)  
+                    currentframe = 0;
+                sourceRect.y = (float)currentframe * (float)frameHeight;
+            }
         }if(IsKeyDown(KEY_LEFT)){
-            destRect.x -= 2.0;
+            destRect.x -= 4.0;
+            if(framecounter >= (60/framespeed)){
+                framecounter = 0;
+                currentframe++;
+                if(currentframe > 6)  
+                    currentframe = 0;
+                sourceRect.y = (float)(currentframe) * (float)frameHeight;
+            }
         }if(IsKeyDown(KEY_UP)){
-            destRect.y -= 2.0;
+            destRect.y -= 4.0;
+            if(framecounter >= (60/framespeed)){
+                framecounter = 0;
+                currentframe++;
+                if(currentframe > 6)  
+                    currentframe = 0;
+                sourceRect.y = (float)currentframe * (float)frameHeight;
+            }
         }if(IsKeyDown(KEY_DOWN)){
-            destRect.y += 2.0;
+            destRect.y += 4.0;
+            if(framecounter >= (60/framespeed)){
+                framecounter = 0;
+                currentframe++;
+                if(currentframe > 6)  
+                    currentframe = 0;
+                sourceRect.y = (float)currentframe * (float)frameHeight;
+            }
         }
 
+
+        camera.target = (Vector2) {destRect.x + 20.0f, destRect.y + 20.0f};
+
+        if(IsKeyDown(KEY_Z)){
+            if(camera.zoom > 5.0){
+                camera.zoom = 5.0;
+            }
+            camera.zoom +=0.25;
+        }else if(IsKeyDown(KEY_X)){
+            if(camera.zoom < 1.0){
+                camera.zoom = 1.0;
+            }
+            camera.zoom -=0.25;
+        }
+
+        /*
         if(destRect.x + destRect.width >= GetScreenWidth()){
             destRect.x = GetScreenWidth() - destRect.width;
         }else if(destRect.x <= 0){
@@ -68,18 +124,20 @@ int main(void){
         }else if(destRect.y <= 0){
             destRect.y = 0;
         }
+        */
 
         if(flagInicio){
 
             BeginDrawing();
-
-                ClearBackground(RAYWHITE);
-                DrawTexturePro(fireTexture, sourceRect, destRect, origin, (float)rotation, WHITE);
                 
                 BeginMode2D(camera);
+                    ClearBackground(RAYWHITE);
+                    DrawRectangle((int)destRectEnemy.x,(int)destRectEnemy.y, (int)destRectEnemy.width, (int)destRectEnemy.height, RED);
+                    DrawTexturePro(memeTexture, sourceRect, destRect, origin, (float)rotation, WHITE);
+                    DrawText("Use as setas para se mover", 400, 150, 50, BLACK);
                 EndMode2D();
 
-                DrawText("Aqui jaz uma história muito nova\nE muito sofrida...", 400, 150, 50, BLACK);
+                
             EndDrawing(); 
 
         }else{
