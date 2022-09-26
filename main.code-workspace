@@ -10,6 +10,8 @@
 			"math.h": "c",
 			"blocks.h": "c",
 			"stdio.h": "c",
+			"animations.h" : "c",
+			"collision.h":"c",
 			"*.m": "c"
 		}
 	}

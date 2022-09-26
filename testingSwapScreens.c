@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "raylib.h"
+#include "animations.h"
+#include "collision.h"
 
 int main(void){
 
@@ -32,7 +34,7 @@ int main(void){
     camera.target = (Vector2){destRect.x + 20.0f, destRect.y + 20.0f};
     camera.offset = (Vector2){screenWidth/2.0f,screenHeight/2.0f};
     camera.rotation = 0.0f;
-    camera.zoom = 1.0f;
+    camera.zoom = 2.0f;
 
     Vector2 origin = {0.0f, 0.0f};
 
@@ -53,49 +55,39 @@ int main(void){
         }else if(IsKeyDown(KEY_F11)){
                 ToggleFullscreen();
         }else if(IsKeyDown(KEY_ESCAPE)){
+            UnloadTexture(fireTexture);
+            UnloadTexture(memeTexture);
+            UnloadTexture(enter_button);
+            CloseWindow();
             exit(1);
+
         }
 
         framecounter++;
         
 
         if(IsKeyDown(KEY_RIGHT)){
+
             destRect.x += 4.0;
-            if(framecounter >= (60/framespeed)){
-                framecounter = 0;
-                currentframe++;
-                if(currentframe > 6)  
-                    currentframe = 0;
-                sourceRect.y = (float)currentframe * (float)frameHeight;
-            }
+            sourceRect.y = runningAnimations(&framecounter,&framespeed,&currentframe,sourceRect.y,frameHeight);
+
         }if(IsKeyDown(KEY_LEFT)){
             destRect.x -= 4.0;
-            if(framecounter >= (60/framespeed)){
-                framecounter = 0;
-                currentframe++;
-                if(currentframe > 6)  
-                    currentframe = 0;
-                sourceRect.y = (float)(currentframe) * (float)frameHeight;
-            }
+            sourceRect.y = runningAnimations(&framecounter,&framespeed,&currentframe,sourceRect.y,frameHeight);
+            
         }if(IsKeyDown(KEY_UP)){
+
             destRect.y -= 4.0;
-            if(framecounter >= (60/framespeed)){
-                framecounter = 0;
-                currentframe++;
-                if(currentframe > 6)  
-                    currentframe = 0;
-                sourceRect.y = (float)currentframe * (float)frameHeight;
-            }
+            sourceRect.y = runningAnimations(&framecounter,&framespeed,&currentframe,sourceRect.y,frameHeight);
+
         }if(IsKeyDown(KEY_DOWN)){
+
             destRect.y += 4.0;
-            if(framecounter >= (60/framespeed)){
-                framecounter = 0;
-                currentframe++;
-                if(currentframe > 6)  
-                    currentframe = 0;
-                sourceRect.y = (float)currentframe * (float)frameHeight;
-            }
+            sourceRect.y = runningAnimations(&framecounter,&framespeed,&currentframe,sourceRect.y,frameHeight);
+
         }
+
+        //mapBorders(&destRect.x,&destRect.y,destRect.width,destRect.height, 1600,800);
 
 
         camera.target = (Vector2) {destRect.x + 20.0f, destRect.y + 20.0f};
@@ -112,19 +104,6 @@ int main(void){
             camera.zoom -=0.25;
         }
 
-        /*
-        if(destRect.x + destRect.width >= GetScreenWidth()){
-            destRect.x = GetScreenWidth() - destRect.width;
-        }else if(destRect.x <= 0){
-            destRect.x = 0;
-        }
-
-        if(destRect.y + destRect.height >= GetScreenHeight()){
-            destRect.y = GetScreenHeight() - destRect.height;
-        }else if(destRect.y <= 0){
-            destRect.y = 0;
-        }
-        */
 
         if(flagInicio){
 
@@ -152,13 +131,7 @@ int main(void){
 
         }
 
+    
     }
-
-    UnloadTexture(fireTexture);
-    UnloadTexture(memeTexture);
-    UnloadTexture(enter_button);
-
-    CloseWindow();
-
     return 0;
 }
