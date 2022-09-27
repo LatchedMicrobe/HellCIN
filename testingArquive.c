@@ -27,14 +27,21 @@ int main(void){
 
     Vector2 vectorImage = {630,200};
 
-    Rectangle sourceRect = {0.0f, 0.0f, (float)frameWidth, (float)frameHeight}; 
+    Rectangle sourceRect = {0.0f, 0.0f, (float)frameWidth, (float)frameHeight};  
+    Rectangle sourceRectEnemies[1];
+    for(int contadorInimigos = 0; contadorInimigos < 2;contadorInimigos++){
+        sourceRectEnemies[contadorInimigos].x = 0.0;
+        sourceRectEnemies[contadorInimigos].y = 0.0;
+        sourceRectEnemies[contadorInimigos].width =  (float)frameWidth;
+        sourceRectEnemies[contadorInimigos].height = (float)frameHeight;
+    }
     Rectangle destRect = {screenWidth/2.0f - 82, screenHeight/2.0f - 46, frameWidth*2.0f, frameHeight*2.0f };
     Camera2D camera = {0};
 
     camera.target = (Vector2){destRect.x + 20.0f, destRect.y + 20.0f};
     camera.offset = (Vector2){screenWidth/2.0f,screenHeight/2.0f};
     camera.rotation = 0.0f;
-    camera.zoom = 2.0f;
+    camera.zoom = 1.0f;
 
     Vector2 origin = {0.0f, 0.0f};
 
@@ -69,10 +76,19 @@ int main(void){
         if(IsKeyDown(KEY_RIGHT)){
 
             destRect.x += 4.0;
+
+            if(sourceRect.width < 0)
+                sourceRect.width = -1 * sourceRect.width;
+
             sourceRect.y = runningAnimations(&framecounter,&framespeed,&currentframe,sourceRect.y,frameHeight);
 
         }if(IsKeyDown(KEY_LEFT)){
+
             destRect.x -= 4.0;
+
+            if(sourceRect.width > 0)
+                sourceRect.width = -1 * sourceRect.width;
+
             sourceRect.y = runningAnimations(&framecounter,&framespeed,&currentframe,sourceRect.y,frameHeight);
             
         }if(IsKeyDown(KEY_UP)){
@@ -87,7 +103,7 @@ int main(void){
 
         }
 
-        //mapBorders(&destRect.x,&destRect.y,destRect.width,destRect.height, 1600,800);
+        mapBorders(&destRect.x,&destRect.y,destRect.width,destRect.height, 1600,800);
 
 
         camera.target = (Vector2) {destRect.x + 20.0f, destRect.y + 20.0f};
@@ -111,8 +127,9 @@ int main(void){
                 
                 BeginMode2D(camera);
                     ClearBackground(RAYWHITE);
-                    DrawRectangle((int)destRectEnemy.x,(int)destRectEnemy.y, (int)destRectEnemy.width, (int)destRectEnemy.height, RED);
+                    //DrawRectangle((int)destRectEnemy.x,(int)destRectEnemy.y, (int)destRectEnemy.width, (int)destRectEnemy.height, RED);
                     DrawTexturePro(memeTexture, sourceRect, destRect, origin, (float)rotation, WHITE);
+                    DrawTexturePro(memeTexture, sourceRectEnemies[0], destRectEnemy, origin, (float)rotation, WHITE);
                     DrawText("Use as setas para se mover", 400, 150, 50, BLACK);
                 EndMode2D();
 
@@ -128,7 +145,6 @@ int main(void){
                 DrawTextureV(enter_button, (Vector2) {690, 520}, WHITE);
 
             EndDrawing();
-
         }
 
     
