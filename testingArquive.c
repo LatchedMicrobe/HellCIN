@@ -21,8 +21,10 @@ int main(void){
 
     Texture2D enter_button = LoadTexture("./Assets/enter.png");
 
+    int nSprites = 6;
+
     int frameWidth = memeTexture.width/2;
-    int frameHeight = memeTexture.height/6;
+    int frameHeight = memeTexture.height/nSprites;
 
 
     Vector2 vectorImage = {630,200};
@@ -80,7 +82,7 @@ int main(void){
             if(sourceRect.width < 0)
                 sourceRect.width = -1 * sourceRect.width;
 
-            sourceRect.y = runningAnimations(&framecounter,&framespeed,&currentframe,sourceRect.y,frameHeight);
+            sourceRect.y = runningAnimations(&framecounter,&framespeed,&currentframe,sourceRect.y,frameHeight, nSprites);
 
         }if(IsKeyDown(KEY_LEFT)){
 
@@ -89,17 +91,17 @@ int main(void){
             if(sourceRect.width > 0)
                 sourceRect.width = -1 * sourceRect.width;
 
-            sourceRect.y = runningAnimations(&framecounter,&framespeed,&currentframe,sourceRect.y,frameHeight);
+            sourceRect.y = runningAnimations(&framecounter,&framespeed,&currentframe,sourceRect.y,frameHeight, nSprites);
             
         }if(IsKeyDown(KEY_UP)){
 
             destRect.y -= 4.0;
-            sourceRect.y = runningAnimations(&framecounter,&framespeed,&currentframe,sourceRect.y,frameHeight);
+            sourceRect.y = runningAnimations(&framecounter,&framespeed,&currentframe,sourceRect.y,frameHeight, nSprites);
 
         }if(IsKeyDown(KEY_DOWN)){
 
             destRect.y += 4.0;
-            sourceRect.y = runningAnimations(&framecounter,&framespeed,&currentframe,sourceRect.y,frameHeight);
+            sourceRect.y = runningAnimations(&framecounter,&framespeed,&currentframe,sourceRect.y,frameHeight, nSprites);
 
         }
 
