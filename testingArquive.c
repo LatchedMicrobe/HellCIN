@@ -55,6 +55,10 @@ int main(void){
     int framecounter = 0;
     int framespeed = 8;
 
+    int currentframe2 = 0;
+    int framecounter2 = 0;
+    int framespeed2 = 8;
+
     while(!WindowShouldClose()){    
 
         if(IsKeyDown(KEY_ENTER)){
@@ -71,6 +75,7 @@ int main(void){
         }
 
         framecounter++;
+        framecounter2++;
         
 
         if(IsKeyDown(KEY_RIGHT)){
@@ -80,6 +85,8 @@ int main(void){
             if(sourceRect.width < 0)
                 sourceRect.width = -1 * sourceRect.width;
 
+            sourceRectEnemies[0].y = runningAnimations(&framecounter2,&framespeed2,&currentframe2,sourceRectEnemies[0].y,frameHeight);
+
             sourceRect.y = runningAnimations(&framecounter,&framespeed,&currentframe,sourceRect.y,frameHeight);
 
         }if(IsKeyDown(KEY_LEFT)){
@@ -88,17 +95,23 @@ int main(void){
 
             if(sourceRect.width > 0)
                 sourceRect.width = -1 * sourceRect.width;
+            
+            sourceRectEnemies[0].y = runningAnimations(&framecounter2,&framespeed2,&currentframe2,sourceRectEnemies[0].y,frameHeight);
 
             sourceRect.y = runningAnimations(&framecounter,&framespeed,&currentframe,sourceRect.y,frameHeight);
             
         }if(IsKeyDown(KEY_UP)){
 
             destRect.y -= 4.0;
+
+            sourceRectEnemies[0].y = runningAnimations(&framecounter2,&framespeed2,&currentframe2,sourceRectEnemies[0].y,frameHeight);
             sourceRect.y = runningAnimations(&framecounter,&framespeed,&currentframe,sourceRect.y,frameHeight);
 
         }if(IsKeyDown(KEY_DOWN)){
 
             destRect.y += 4.0;
+
+            sourceRectEnemies[0].y = runningAnimations(&framecounter2,&framespeed2,&currentframe2,sourceRectEnemies[0].y,frameHeight);
             sourceRect.y = runningAnimations(&framecounter,&framespeed,&currentframe,sourceRect.y,frameHeight);
 
         }
