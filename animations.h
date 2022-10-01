@@ -3,7 +3,7 @@
 
 
 
-float runningAnimations(int *frameCounter, int *frameSpeed, int *currentFrame, float sourceValue, int measureFrame);
+float runningAnimations(int *frameCounter, int *frameSpeed, int *currentFrame, float sourceValue, int measureFrame, int nSprites);
 
 #endif
 

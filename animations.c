@@ -6,11 +6,11 @@
 // e o frame atual(esse precisa ser ponteiro para ter acesso a essa variavel de fora da animação), sourceValue(valor de passagem pra outros frames)
 // de animação) e measureFrame(tamanho dos frames de animação) - Rodrigo
 
-float runningAnimations(int *frameCounter, int *frameSpeed, int *currentFrame, float sourceValue, int measureFrame){
+float runningAnimations(int *frameCounter, int *frameSpeed, int *currentFrame, float sourceValue, int measureFrame, int nSprites){
     if(*(frameCounter) >= (60/(*(frameSpeed)))){
         *(frameCounter) = 0;
-        (*(currentFrame)) += 1;;
-        if(*(currentFrame) > 6)  
+        (*(currentFrame)) += 1;
+        if(*(currentFrame) > nSprites)  
             *(currentFrame) = 0;
         sourceValue = (float)(*(currentFrame)) * (float)measureFrame;
     }
