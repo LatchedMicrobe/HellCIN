@@ -96,7 +96,7 @@ int main(void){
             if(sourceRect.width > 0)
                 sourceRect.width = -1 * sourceRect.width;
             
-            sourceRectEnemies[0].y = runningAnimations(&framecounter2,&framespeed2,&currentframe2,sourceRectEnemies[0].y,frameHeight);
+            sourceRectEnemies[0].y = runningAnimations(&framecounter2,&framespeed2,&currentframe2,sourceRectEnemies[0].y,frameHeight,nSprites);
 
             sourceRect.y = runningAnimations(&framecounter,&framespeed,&currentframe,sourceRect.y,frameHeight, nSprites);
             
