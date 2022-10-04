@@ -3,6 +3,7 @@
 #include "raylib.h"
 #include "animations.h"
 #include "collision.h"
+#include "menu.h"
 
 int main(void){
 
@@ -146,14 +147,7 @@ int main(void){
             EndDrawing(); 
 
         }else{
-            BeginDrawing();
-                ClearBackground(RAYWHITE);
-
-                DrawText("HellCIN", 680, 150, 50, BLACK);
-                DrawTextureV(fireTexture, vectorImage, WHITE);
-                DrawTextureV(enter_button, (Vector2) {690, 520}, WHITE);
-
-            EndDrawing();
+            IniciarMenu ();
         }
 
     
