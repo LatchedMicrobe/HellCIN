@@ -294,8 +294,6 @@ int main(void){
                             if(stormheadAttack_active){
 
                             }else{
-                                DrawRectangleRec(retanguloTeste,RED);
-                                DrawRectangleRec(stormheadRun_destRect,BLUE);
                                 DrawTexturePro(stormheadRun, stormheadRun_sourceRect, stormheadRun_destRect, origin, rotation, RAYWHITE);
                             }
                         EndMode2D();
