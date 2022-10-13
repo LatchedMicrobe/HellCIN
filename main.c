@@ -16,6 +16,11 @@ int main(void){
 
     InitWindow(screenWidth, screenHeight, "HellCIN");
     InitAudioDevice();
+    
+    Image tela2_background = LoadImage("./Assets/Grid.png");
+    Texture2D  tela2_backgroundT = LoadTextureFromImage(tela2_background);
+    UnloadImage (tela2_background);
+    Vector2 position = { (float)(screenWidth/2 - tela2_background.width/2), (float)(screenHeight/2 - tela2_background.height/2 - 20)};
 
     Sound initialSound = LoadSound("./Assets/Sounds/soundInitial.wav");
     Texture2D firstFase = LoadTexture("./Assets/Maps/Mapa.png");
@@ -276,15 +281,14 @@ int main(void){
                 BeginDrawing();
 
                     if(!flagFirstFase){
-
-                        ClearBackground(RAYWHITE);
-                        DrawText("Após passar pelo ENEM você, 'estudante', agora se botou numa enrascada ainda maior", 100, 300, 30, BLACK);
-                        DrawText("o HELLCIN será que você superar estes novos desafios? Ou ficará no caminho como", 100, 340, 30, BLACK);
-                        DrawText("muitos outros antes de você, que perderam a sanidade frente aos novos desafios?", 100, 380, 30, BLACK);
-                        DrawText("bem, veremos...", 100, 400, 30, BLACK);
-                        DrawText("Pressione I para sofrer", 100, 500, 30, BLACK);
-
+                        DrawTextureV(tela2_backgroundT, position, WHITE);
+                        DrawText("Após passar pelo ENEM você, 'estudante', agora se botou numa enrascada ainda maior", 100, 300, 30, WHITE);
+                        DrawText("o HELLCIN, será que você irá superar estes novos desafios? Ou ficará no caminho como", 100, 340, 30, WHITE);
+                        DrawText("muitos outros antes de você, que perderam a sanidade frente aos novos desafios?", 100, 380, 30, WHITE);
+                        DrawText("bem, veremos...", 100, 420, 30, WHITE);
+                        DrawText("Pressione I para sofrer", 100, 500, 30, WHITE);
                     }else if(flagFirstFase == true && flagSecondFase == false){
+
                         //Definição de bordas do mapa
                         mapBorders(&stormheadRun_destRect.x,&stormheadRun_destRect.y,stormheadRun_destRect.width,stormheadRun_destRect.height, 38, 38, 1562, 755);
 
