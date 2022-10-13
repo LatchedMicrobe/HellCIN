@@ -107,85 +107,27 @@ int main(){
         }
         
         if(bacAttack_active){
-            
-            bacAttack_destRect.x = bacRun_destRect.x;
-            bacAttack_destRect.y = bacRun_destRect.y;
-            
-            if(bacAttack_framecounter >= (60/bacAttack_framespeed)){
-                bacAttack_framecounter++;
-                
-                if(bacAttack_framecounter>2){
-                    bacAttack_currentframe++;
-                    
-                    if(bacAttack_currentframe >= 8){
-                        
-                        bacAttack_currentframe = 0;
-                        bacAttack_active = false;
-                    
-                    }
-                    
-                    bacAttack_framecounter = 0;
-                }  
-               bacAttack_sourceRect.y = (float)(bacAttack_currentframe) * (float)(bacAttack_Heigth);    
-            } 
-                
+             attackAndDeath(&bacAttack_sourceRect,&bacAttack_destRect,&bacRun_destRect,&bacAttack_framecounter,&bacAttack_currentframe,&bacAttack_framespeed,8,&bacAttack_Heigth,&bacAttack_active);              
         }        
         
         if(bacDeath_active){
             
-            bacDeath_destRect.x = bacRun_destRect.x;
-            bacDeath_destRect.y = bacRun_destRect.y;
-            
-            if(bacDeath_framecounter >= (60/bacDeath_framespeed)){
-                bacDeath_framecounter++;
-                
-                if(bacDeath_framecounter>2){
-                    bacDeath_currentframe++;
-                    
-                    if(bacDeath_currentframe > 4){
-                        
-                        bacDeath_currentframe = 4;
-                        bacDeath_active = false;
-                        IsBacDead = true;
-                    
-                    }
-                    
-                    bacDeath_framecounter = 0;
-                }    
-            }            
+            attackAndDeath(&bacDeath_sourceRect,&bacDeath_destRect,&bacRun_destRect,&bacDeath_framecounter,&bacDeath_currentframe,&bacDeath_framespeed,5,&bacDeath_Heigth,&bacDeath_active);
+            IsBacDead = true;           
         } 
 
         bacDeath_sourceRect.y = (float)(bacDeath_currentframe) * (float)(bacDeath_Heigth);   
 
         mapBorders(&bacRun_destRect.x,&bacRun_destRect.y,bacRun_destRect.width,bacRun_destRect.height, 1600,800);  
         mapBorders(&bacAttack_destRect.x,&bacAttack_destRect.y,bacAttack_destRect.width,bacAttack_destRect.height, 1600,800);  
-        mapBorders(&bacDeath_destRect.x,&bacDeath_destRect.y,bacDeath_destRect.width,bacDeath_destRect.height, 1600,800);   
-                
-        if(bacAttack_active && !IsBacDead){
-            BeginDrawing();
-            ClearBackground(RAYWHITE);
-            DrawTexturePro(bacAttack, bacAttack_sourceRect, bacAttack_destRect, origin, rotation, RAYWHITE);
-            EndDrawing(); 
-        
-        }else if(bacDeath_active){
-            BeginDrawing();            
-            ClearBackground(RAYWHITE);            
-            DrawTexturePro(bacDeath, bacDeath_sourceRect, bacDeath_destRect, origin, rotation, RAYWHITE);            
-            EndDrawing();
-        
-        }else if(!IsBacDead){      
-            BeginDrawing();
-            ClearBackground(RAYWHITE);
-            DrawTexturePro(bacRun, bacRun_sourceRect, bacRun_destRect, origin, rotation, RAYWHITE);            
-            EndDrawing();   
-            
-        }else if(IsBacDead){
-            BeginDrawing();            
-            ClearBackground(RAYWHITE);            
-            DrawTexturePro(bacDeath, bacDeath_sourceRect, bacDeath_destRect, origin, rotation, RAYWHITE);            
-            EndDrawing();
-        }
-          
+        mapBorders(&bacDeath_destRect.x,&bacDeath_destRect.y,bacDeath_destRect.width,bacDeath_destRect.height, 1600,800);
+
+        BeginDrawing();
+        ClearBackground(RAYWHITE);
+
+        drawingStatusAnimations(bacAttack_active,IsBacDead,bacDeath_active,&bacRun,&bacAttack,&bacDeath,&bacRun_sourceRect,&bacAttack_sourceRect,&bacDeath_sourceRect,&bacRun_destRect,&bacAttack_destRect,&bacDeath_destRect, &origin,rotation);
+
+        EndDrawing(); 
     }
 
     UnloadTexture(bacAttack);

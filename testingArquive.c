@@ -137,7 +137,8 @@ int main(void){
                 
                 BeginMode2D(camera);
                     ClearBackground(RAYWHITE);
-                    //DrawRectangle((int)destRectEnemy.x,(int)destRectEnemy.y, (int)destRectEnemy.width, (int)destRectEnemy.height, RED);
+                    DrawRectangle((int)destRect.x,(int)destRect.y, (int)destRect.width, (int)destRect.height, RED);
+                    DrawRectangleV(vectorImage, (Vector2) {50.0f, 50.0f}, BLUE);
                     DrawTexturePro(memeTexture, sourceRect, destRect, origin, (float)rotation, WHITE);
                     DrawTexturePro(memeTexture, sourceRectEnemies[0], destRectEnemy, origin, (float)rotation, WHITE);
                     DrawText("Use as setas para se mover", 400, 150, 50, BLACK);

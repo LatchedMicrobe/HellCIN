@@ -9,6 +9,8 @@
 		"**/*.exe": true,
 	},
 	"files.associations": {
-		"animations.h": "c"
+		"animations.h": "c",
+		"collision.h" : "c",
+		"menu.h" : "c"
 	}
 }

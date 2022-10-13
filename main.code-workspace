@@ -12,6 +12,7 @@
 			"stdio.h": "c",
 			"animations.h" : "c",
 			"collision.h":"c",
+			"menu.h" : "c",
 			"*.m": "c"
 		}
 	}
