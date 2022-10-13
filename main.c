@@ -6,7 +6,7 @@
 #include "collision.h"
 
 int main(void){
-
+    //Definição de variaveis de tela e jogo
     const int screenWidth = 1600;
     const int screenHeight = 800;
 
@@ -21,7 +21,9 @@ int main(void){
     Texture2D firstFase = LoadTexture("./Assets/Maps/Mapa.png");
     Texture2D secondFase = LoadTexture("./Assets/Maps/Mapa2.png");
     Vector2 positionMaps = { (float)(screenWidth/2 - firstFase.width/2), (float)(screenHeight/2 - firstFase.height/2) };
-
+    Vector2 origin = {0.0f, 0.0f};
+    
+    //Definição da textura de inimigos/protagonista
     Texture2D mudRun = LoadTexture("./Assets/Mud Guard/Run.png");
     Texture2D mudAttack1 = LoadTexture("./Assets/Mud Guard/attack 1.png");
     Texture2D mudAttack2 = LoadTexture("./Assets/Mud Guard/attack 2.png");
@@ -36,7 +38,7 @@ int main(void){
     Texture2D wheelGas = LoadTexture("./Assets/Bot Wheel/GAS dash with FX.png");
     Texture2D wheelDeath = LoadTexture("./Assets/Bot Wheel/death.png");
 
-
+    //Variaveis de animação para inimigos/protagonista
     int mudRun_nSprites = 6;
     int mudRun_Width = mudRun.width;
     int mudRun_Heigth = mudRun.height/mudRun_nSprites;
@@ -153,20 +155,24 @@ int main(void){
 
 
     int stormheadRun_nSprites = 10;
-    int stormheadRun_Width = stormheadRun.width;
+    int stormheadRun_Width = stormheadRun.width - 80;
     int stormheadRun_Heigth = stormheadRun.height/stormheadRun_nSprites;
 
     int stormheadAttack_nSprites = 21;
     int stormheadAttack_Width = stormheadAttack.width;
     int stormheadAttack_Heigth = stormheadAttack.height/stormheadAttack_nSprites;
 
-    Rectangle stormheadRun_sourceRect = {0.0f, 0.0f, (float)stormheadRun_Width, (float)stormheadRun_Heigth};
-    Rectangle stormheadRun_destRect = {screenWidth/2.0f, screenHeight/2.0f, stormheadRun_Width*2.0f, stormheadRun_Heigth*2.0f };
+    Rectangle stormheadRun_sourceRect = {40.0f, 0.0f, (float)stormheadRun_Width, (float)stormheadRun_Heigth};
+    Rectangle stormheadRun_destRect = {screenWidth/2.0f, screenHeight/2.0f, stormheadRun_Width*1.0f, stormheadRun_Heigth*1.0f };
 
     Rectangle stormheadAttack_sourceRect = {0.0f, 0.0f, (float)stormheadAttack_Width, (float)stormheadAttack_Heigth};
     Rectangle stormheadAttack_destRect = {screenWidth/2.0f - 82, screenHeight/2.0f - 46, stormheadAttack_Width*2.0f, stormheadAttack_Heigth*2.0f };
 
-
+    Camera2D cameraPersonagem = {0};
+    cameraPersonagem.target = (Vector2){stormheadRun_destRect.x + 55.0f, stormheadRun_destRect.y + 25.0f};
+    cameraPersonagem.offset = (Vector2){screenWidth/2.0f,screenHeight/2.0f};
+    cameraPersonagem.rotation = 0.0f;
+    cameraPersonagem.zoom = 3.5f;    
 
     int stormheadRun_framecounter = 0;
     int stormheadRun_framespeed = 8;
@@ -178,11 +184,16 @@ int main(void){
     bool stormheadAttack_active = false;
     int stormheadAttack_count = 0;
 
+    Rectangle retanguloTeste = {1394.0f, 38.0f, 38.0f, 126.0f};
+
 
     SetTargetFPS(60);
+
+    //Inicio do jogo somente se o dispositivo de som e audio tiverem sido iniciados
     if(IsAudioDeviceReady() == true && IsWindowReady() == true){
         while(!WindowShouldClose()){
 
+            //Teclas iniciais(as de fase serão tiradas na versão final)
             if(IsKeyDown(KEY_ENTER)){
 
                     beginFlag = true;
@@ -192,7 +203,20 @@ int main(void){
                     ToggleFullscreen();
 
             }else if(IsKeyDown(KEY_ESCAPE)){
-
+                UnloadSound(initialSound);
+                UnloadTexture(mudAttack1);
+                UnloadTexture(mudAttack2);
+                UnloadTexture(mudDeath);
+                UnloadTexture(mudRun);
+                UnloadTexture(stormheadAttack);
+                UnloadTexture(stormheadRun);
+                UnloadTexture(wheelAttack);
+                UnloadTexture(wheelCharge);
+                UnloadTexture(wheelDeath);
+                UnloadTexture(wheelGas);
+                UnloadTexture(wheelRun);
+                UnloadTexture(firstFase);
+                UnloadTexture(secondFase);
                 CloseWindow();
                 exit(1);
             }else if(IsKeyDown(KEY_I) && flagFirstFase == false){
@@ -203,21 +227,78 @@ int main(void){
                 PlaySound(initialSound);
             }
 
+            //Teclas de movimentação
+
+            stormheadRun_framecounter++;
+            stormheadAttack_framecounter++;
+
+            
+            if(IsKeyDown(KEY_RIGHT)){
+                stormheadRun_destRect.x +=4;
+
+                
+
+                if(stormheadRun_sourceRect.width < 0){
+                    stormheadRun_sourceRect.width = -1 * stormheadRun_sourceRect.width;
+                    stormheadAttack_sourceRect.width = -1 * stormheadAttack_sourceRect.width;
+                }
+
+                stormheadRun_sourceRect.y = runningAnimations(&stormheadRun_framecounter, &stormheadRun_framespeed, &stormheadRun_currentframe, stormheadRun_sourceRect.y, stormheadRun_Heigth, stormheadRun_nSprites);
+            }
+            if(IsKeyDown(KEY_LEFT)){
+                stormheadRun_destRect.x -=4;
+
+                if(stormheadRun_sourceRect.width > 0){
+                    stormheadRun_sourceRect.width = -1 * stormheadRun_sourceRect.width;
+                    stormheadAttack_sourceRect.width = -1 * stormheadAttack_sourceRect.width;
+                }
+
+                stormheadRun_sourceRect.y = runningAnimations(&stormheadRun_framecounter, &stormheadRun_framespeed, &stormheadRun_currentframe, stormheadRun_sourceRect.y, stormheadRun_Heigth, stormheadRun_nSprites);
+            }
+            if(IsKeyDown(KEY_DOWN)){
+                stormheadRun_destRect.y +=4;
+
+                stormheadRun_sourceRect.y = runningAnimations(&stormheadRun_framecounter, &stormheadRun_framespeed, &stormheadRun_currentframe, stormheadRun_sourceRect.y, stormheadRun_Heigth, stormheadRun_nSprites);
+            }
+            if(IsKeyDown(KEY_UP)){
+                stormheadRun_destRect.y -=4;
+
+                stormheadRun_sourceRect.y = runningAnimations(&stormheadRun_framecounter, &stormheadRun_framespeed, &stormheadRun_currentframe, stormheadRun_sourceRect.y, stormheadRun_Heigth, stormheadRun_nSprites);
+            }
+
+            structureCollision(&stormheadRun_destRect,&retanguloTeste);
+
+            //Centralização da camera
+            cameraPersonagem.target = (Vector2) {stormheadRun_destRect.x + 55.0f, stormheadRun_destRect.y + 25.0f};
+
             if(beginFlag){
 
                 BeginDrawing();
 
                     if(!flagFirstFase){
+
                         ClearBackground(RAYWHITE);
                         DrawText("Após passar pelo ENEM você, 'estudante', agora se botou numa enrascada ainda maior", 100, 300, 30, BLACK);
                         DrawText("o HELLCIN será que você superar estes novos desafios? Ou ficará no caminho como", 100, 340, 30, BLACK);
                         DrawText("muitos outros antes de você, que perderam a sanidade frente aos novos desafios?", 100, 380, 30, BLACK);
                         DrawText("bem, veremos...", 100, 400, 30, BLACK);
                         DrawText("Pressione I para sofrer", 100, 500, 30, BLACK);
-                    }else if(flagFirstFase == true && flagSecondFase == false){
 
-                        ClearBackground(BLACK);
-                        DrawTextureV(firstFase, positionMaps, WHITE);
+                    }else if(flagFirstFase == true && flagSecondFase == false){
+                        //Definição de bordas do mapa
+                        mapBorders(&stormheadRun_destRect.x,&stormheadRun_destRect.y,stormheadRun_destRect.width,stormheadRun_destRect.height, 38, 38, 1562, 755);
+
+                        BeginMode2D(cameraPersonagem);
+                            ClearBackground(BLACK);
+                            DrawTextureV(firstFase, positionMaps, WHITE);
+                            if(stormheadAttack_active){
+
+                            }else{
+                                DrawRectangleRec(retanguloTeste,RED);
+                                DrawRectangleRec(stormheadRun_destRect,BLUE);
+                                DrawTexturePro(stormheadRun, stormheadRun_sourceRect, stormheadRun_destRect, origin, rotation, RAYWHITE);
+                            }
+                        EndMode2D();
 
                     }else if(flagFirstFase == true && flagSecondFase == true){
 
