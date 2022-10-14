@@ -42,6 +42,10 @@ int main(void){
     Texture2D wheelAttack = LoadTexture("./Assets/Bot Wheel/shoot with FX.png");
     Texture2D wheelGas = LoadTexture("./Assets/Bot Wheel/GAS dash with FX.png");
     Texture2D wheelDeath = LoadTexture("./Assets/Bot Wheel/death.png");
+    
+    Sound musicaF1 = LoadSound ("Assets/Sounds/musicaF1.mp3");
+    Sound musicahist = LoadSound ("Assets/Sounds/musicahist.mp3");
+    PlaySound (musicahist);
 
     //Variaveis de animação para inimigos/protagonista
     int mudRun_nSprites = 6;
@@ -227,6 +231,9 @@ int main(void){
                 UnloadTexture(wheelRun);
                 UnloadTexture(firstFase);
                 UnloadTexture(secondFase);
+                UnloadTexture (tela2_backgroundT);
+                UnloadSound (musicaF1);
+                UnloadSound (musicahist);
                 CloseWindow();
                 exit(1);
             }else if(IsKeyDown(KEY_I) && flagFirstFase == false){
@@ -289,6 +296,7 @@ int main(void){
                 BeginDrawing();
 
                     if(!flagFirstFase){
+                        PlaySound (musicaF1);
                         DrawTextureV(tela2_backgroundT, position, WHITE);
                         DrawText("Após passar pelo ENEM você, 'estudante', agora se botou numa enrascada ainda maior", 100, 300, 30, WHITE);
                         DrawText("o HELLCIN, será que você irá superar estes novos desafios? Ou ficará no caminho como", 100, 340, 30, WHITE);
@@ -296,7 +304,7 @@ int main(void){
                         DrawText("bem, veremos...", 100, 420, 30, WHITE);
                         DrawText("Pressione I para sofrer", 100, 500, 30, WHITE);
                     }else if(flagFirstFase == true && flagSecondFase == false){
-
+                        StopSound (musicahist);
                         //Definição de bordas do mapa
                         mapBorders(&stormheadRun_destRect.x,&stormheadRun_destRect.y,stormheadRun_destRect.width,stormheadRun_destRect.height, 38, 38, 1562, 755);
 
