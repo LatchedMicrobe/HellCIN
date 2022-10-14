@@ -67,7 +67,14 @@ int main(void){
 
 
     Rectangle mudRun_sourceRect = {0.0f, 0.0f, (float)mudRun_Width, (float)mudRun_Heigth};
-    Rectangle mudRun_destRect = {screenWidth/2.0f - 82, screenHeight/2.0f - 46, mudRun_Width*2.0f, mudRun_Heigth*2.0f };
+    Rectangle mudRun_destRect[8];
+
+    for(int cnt1 = 0; cnt1 < 8; cnt1++){
+        mudRun_destRect[cnt1].x =  screenWidth/2.0f - 82;
+        mudRun_destRect[cnt1].y =  screenHeight/2.0f - 46;
+        mudRun_destRect[cnt1].width = mudAttack1_Width*2.0f;
+        mudRun_destRect[cnt1].height =  mudAttack1_Heigth*2.0f;
+    }
 
     Rectangle mudAttack1_sourceRect = {0.0f, 0.0f, (float)mudAttack1_Width, (float)mudAttack1_Heigth};
     Rectangle mudAttack1_destRect = {screenWidth/2.0f - 82, screenHeight/2.0f - 46, mudAttack1_Width*2.0f, mudAttack1_Heigth*2.0f };
@@ -124,16 +131,16 @@ int main(void){
     Rectangle wheelRun_sourceRect = {0.0f, 0.0f, (float)wheelRun_Width, (float)wheelRun_Heigth};
     Rectangle wheelRun_destRect[8];
 
-
-    Rectangle wheelCharge_sourceRect = {0.0f, 0.0f, (float)wheelCharge_Width, (float)wheelCharge_Heigth};
-    Rectangle wheelCharge_destRect = {screenWidth/2.0f - 82, screenHeight/2.0f - 46, wheelRun_Width*2.0f, wheelRun_Heigth*2.0f };
-
     for(int cnt1 = 0; cnt1 < 8; cnt1++){
         wheelRun_destRect[cnt1].x =  screenWidth/2.0f - 82;
         wheelRun_destRect[cnt1].y =  screenHeight/2.0f - 46;
         wheelRun_destRect[cnt1].width = wheelAttack_Width*2.0f;
         wheelRun_destRect[cnt1].height =  wheelAttack_Heigth*2.0f;
     }
+
+    Rectangle wheelCharge_sourceRect = {0.0f, 0.0f, (float)wheelCharge_Width, (float)wheelCharge_Heigth};
+    Rectangle wheelCharge_destRect = {screenWidth/2.0f - 82, screenHeight/2.0f - 46, wheelRun_Width*2.0f, wheelRun_Heigth*2.0f };
+
 
     Rectangle wheelAttack_sourceRect = {0.0f, 0.0f, (float)wheelAttack_Width, (float)wheelAttack_Heigth};
     Rectangle wheelAttack_destRect = {screenWidth/2.0f - 82, screenHeight/2.0f - 46, wheelAttack_Width*2.0f, wheelAttack_Heigth*2.0f };
@@ -202,15 +209,21 @@ int main(void){
     int stormheadAttack_count = 0;
 
     Vector2 enemiesVector[8] = {0};
+    Vector2 enemiesVector2[8] = {0};
+
     Rectangle retanguloPaulo = {1394.0f, 38.0f, 38.0f, 126.0f};
     Rectangle retanguloPauloConversa = {1344.0f, 38.0f, 100.0f, 140.0f};
     Rectangle dialogoPaulo = {stormheadRun_destRect.x, stormheadRun_destRect.y + 25.0f, 450.0f, 60.0f};
-    bool flagDialogo = false, flagLoja = false;
-    int escolhaUpgrade = 0;
+
+    bool flagDialogo = false, flagLoja = false, flagLoja2 = false;
+    int escolhaUpgrade = 0, contadorMovimentacao = 0;
+    long long int contadorTempo = 0;
 
     for(int cnt2 = 0; cnt2 < 8; cnt2++)
         enemiesVector[cnt2] = randomVector(-700,700,-350,350);
-    
+
+    for(int cnt2 = 0; cnt2 < 8; cnt2++)
+        enemiesVector2[cnt2] = randomVector(-700,700,-350,350);
     
 
 
@@ -257,16 +270,16 @@ int main(void){
                 PlaySound(initialSound);
             }
 
-            //Teclas de movimentação
 
             stormheadRun_framecounter++;
             stormheadAttack_framecounter++;
 
-            
-            if(IsKeyDown(KEY_RIGHT)){
-                stormheadRun_destRect.x +=4;
+            contadorTempo++;
 
-                
+
+           //Teclas de movimentação 
+            if(IsKeyDown(KEY_RIGHT)){
+                stormheadRun_destRect.x +=4;      
 
                 if(stormheadRun_sourceRect.width < 0){
                     stormheadRun_sourceRect.width = -1 * stormheadRun_sourceRect.width;
@@ -296,6 +309,7 @@ int main(void){
                 stormheadRun_sourceRect.y = runningAnimations(&stormheadRun_framecounter, &stormheadRun_framespeed, &stormheadRun_currentframe, stormheadRun_sourceRect.y, stormheadRun_Heigth, stormheadRun_nSprites);
             }
 
+
             structureCollision(&stormheadRun_destRect,&retanguloPaulo);
 
             //Centralização da camera
@@ -303,6 +317,7 @@ int main(void){
 
             dialogoPaulo.x = stormheadRun_destRect.x - 200.0f;
             dialogoPaulo.y = stormheadRun_destRect.y + 75.0f;
+
 
             if(beginFlag){
 
@@ -321,15 +336,57 @@ int main(void){
                             StopSound (musicahist);
                             //Definição de bordas do mapa
                             mapBorders(&stormheadRun_destRect.x,&stormheadRun_destRect.y,stormheadRun_destRect.width,stormheadRun_destRect.height, 38, 38, 1562, 755);
-
+                            //for(int cnt3 = 0; cnt3 < 8; cnt3++){ Tentei fazer funcionar e n deu rip dms ~~Rodrigo :(
+                                //mapBorders(&wheelRun_destRect[cnt3].x,&wheelRun_destRect[cnt3].y,wheelRun_destRect[cnt3].width,wheelRun_destRect[cnt3].height, 38, 38, 1562, 755);
+                            //}
                             BeginMode2D(cameraPersonagem);
                                 ClearBackground(BLACK);
                                 DrawTextureV(firstFase, positionMaps, WHITE);
                                     
                                 DrawTexturePro(stormheadRun, stormheadRun_sourceRect, stormheadRun_destRect, origin, rotation, RAYWHITE);
-                            
+
+                                wheelRun_framecounter++;
+                                if(contadorTempo >=0 && contadorTempo <= 50){
+
+                                    for(contadorMovimentacao = 0; contadorMovimentacao < 8; contadorMovimentacao++)
+                                        wheelRun_destRect[contadorMovimentacao].x += 2;
+                                    
+
+                                    if(wheelRun_sourceRect.width < 0){
+                                        wheelRun_sourceRect.width = -1 * wheelRun_sourceRect.width;
+                                    }
+
+                                    wheelRun_sourceRect.y = runningAnimations(&wheelRun_framecounter, &wheelRun_framespeed, &wheelRun_currentframe, wheelRun_sourceRect.y, wheelRun_Heigth, wheelRun_nSprites);
+
+                                }else if(contadorTempo > 50 && contadorTempo <= 100){
+                                    for(contadorMovimentacao = 0; contadorMovimentacao < 8; contadorMovimentacao++)
+                                        wheelRun_destRect[contadorMovimentacao].x -= 2;
+
+                                    if(wheelRun_sourceRect.width > 0){
+                                        wheelRun_sourceRect.width = -1 * wheelRun_sourceRect.width;
+                                    }
+
+                                        wheelRun_sourceRect.y = runningAnimations(&wheelRun_framecounter, &wheelRun_framespeed, &wheelRun_currentframe, wheelRun_sourceRect.y, wheelRun_Heigth, wheelRun_nSprites);
+                                    
+                                }else if(contadorTempo > 100 && contadorTempo <=150){
+                                    for(contadorMovimentacao = 0; contadorMovimentacao < 8; contadorMovimentacao++){
+                                        wheelRun_destRect[contadorMovimentacao].y += 2;
+                                    }
+                                    wheelRun_sourceRect.y = runningAnimations(&wheelRun_framecounter, &wheelRun_framespeed, &wheelRun_currentframe, wheelRun_sourceRect.y, wheelRun_Heigth, wheelRun_nSprites);
+                                }else if(contadorTempo > 150 && contadorTempo <= 200){
+                                    for(contadorMovimentacao = 0; contadorMovimentacao < 8; contadorMovimentacao++){
+                                        wheelRun_destRect[contadorMovimentacao].y -= 2;
+
+                                    }
+                                    if(contadorTempo == 200){
+                                            contadorTempo = 0;
+                                        }
+                                    wheelRun_sourceRect.y = runningAnimations(&wheelRun_framecounter, &wheelRun_framespeed, &wheelRun_currentframe, wheelRun_sourceRect.y, wheelRun_Heigth, wheelRun_nSprites);
+                                    
+                                }
+
                                 for(int cnt3 = 0; cnt3 < 8; cnt3++){
-                                    DrawTexturePro(mudRun, mudRun_sourceRect, wheelRun_destRect[cnt3], enemiesVector[cnt3], rotation, RAYWHITE);
+                                    DrawTexturePro(wheelRun, wheelRun_sourceRect, wheelRun_destRect[cnt3], enemiesVector[cnt3], rotation, RAYWHITE);
                                 }
 
 
@@ -391,8 +448,8 @@ int main(void){
                         EndDrawing();
                     }else if(flagFirstFase == true && flagSecondFase == true){
 
-                        flagDialogo = false;
-                        flagLoja = false;
+                        retanguloPaulo.x = 1490.0f;
+                        retanguloPauloConversa.x = 1440.0f;
                         escolhaUpgrade = 0;
 
                         BeginDrawing();
@@ -406,6 +463,50 @@ int main(void){
                                     
                                 DrawTexturePro(stormheadRun, stormheadRun_sourceRect, stormheadRun_destRect, origin, rotation, RAYWHITE);
 
+                                mudRun_framecounter++;
+                                if(contadorTempo >=0 && contadorTempo <= 50){
+
+                                    for(contadorMovimentacao = 0; contadorMovimentacao < 8; contadorMovimentacao++)
+                                        mudRun_destRect[contadorMovimentacao].x += 2;
+                                    
+
+                                    if(mudRun_sourceRect.width < 0){
+                                        mudRun_sourceRect.width = -1 * mudRun_sourceRect.width;
+                                    }
+
+                                    mudRun_sourceRect.y = runningAnimations(&mudRun_framecounter, &mudRun_framespeed, &mudRun_currentframe, mudRun_sourceRect.y, mudRun_Heigth, mudRun_nSprites);
+
+                                }else if(contadorTempo > 50 && contadorTempo <= 100){
+                                    for(contadorMovimentacao = 0; contadorMovimentacao < 8; contadorMovimentacao++)
+                                        mudRun_destRect[contadorMovimentacao].x -= 2;
+
+                                    if(mudRun_sourceRect.width > 0){
+                                        mudRun_sourceRect.width = -1 * mudRun_sourceRect.width;
+                                    }
+
+                                        mudRun_sourceRect.y = runningAnimations(&mudRun_framecounter, &mudRun_framespeed, &mudRun_currentframe, mudRun_sourceRect.y, mudRun_Heigth, mudRun_nSprites);
+                                    
+                                }else if(contadorTempo > 100 && contadorTempo <=150){
+                                    for(contadorMovimentacao = 0; contadorMovimentacao < 8; contadorMovimentacao++){
+                                        mudRun_destRect[contadorMovimentacao].y += 2;
+                                    }
+                                    mudRun_sourceRect.y = runningAnimations(&mudRun_framecounter, &mudRun_framespeed, &mudRun_currentframe, mudRun_sourceRect.y, mudRun_Heigth, mudRun_nSprites);
+                                }else if(contadorTempo > 150 && contadorTempo <= 200){
+                                    for(contadorMovimentacao = 0; contadorMovimentacao < 8; contadorMovimentacao++){
+                                        mudRun_destRect[contadorMovimentacao].y -= 2;
+
+                                    }
+                                    if(contadorTempo == 200){
+                                            contadorTempo = 0;
+                                        }
+                                    mudRun_sourceRect.y = runningAnimations(&mudRun_framecounter, &mudRun_framespeed, &mudRun_currentframe, mudRun_sourceRect.y, mudRun_Heigth, mudRun_nSprites);
+                                    
+                                }
+
+                                for(int cnt3 = 0; cnt3 < 8; cnt3++){
+                                    DrawTexturePro(mudRun, mudRun_sourceRect, mudRun_destRect[cnt3], enemiesVector2[cnt3], rotation, RAYWHITE);
+                                }
+
                                 if(CheckCollisionRecs(stormheadRun_destRect,retanguloPauloConversa)){
                                     
                                     DrawText("Pressione E para falar", ((int) stormheadRun_destRect.x - 30.0f), ((int) stormheadRun_destRect.y + 50.0f), 8, WHITE);
@@ -417,7 +518,7 @@ int main(void){
                                         DrawRectangleRec(dialogoPaulo,GRAY);
                                     }
                                 
-                                    if(flagDialogo == true && flagLoja == false){
+                                    if(flagDialogo == true && flagLoja2 == false){
                                         DrawText("Uau! São poucos os que passam de [PLACEHOLDERNAME] sem ficar insanos, talvez", dialogoPaulo.x,dialogoPaulo.y, 8, BLACK); 
                                         DrawText("você realmente seja quem irá superar todos os desafios?! Não, não devemos nos pre",dialogoPaulo.x,dialogoPaulo.y + 8, 8, BLACK);
                                         DrawText("-cipitar ainda, você ainda tem mais desafios pela frente, e eu lhe ajudarei no que",dialogoPaulo.x,dialogoPaulo.y + 16, 8, BLACK);
@@ -425,10 +526,10 @@ int main(void){
                                         DrawText("- Pressione L para acessar a loja",dialogoPaulo.x,dialogoPaulo.y + 32, 8, BLACK);
 
                                         if(IsKeyDown(KEY_L)){
-                                            flagLoja = true;
+                                            flagLoja2 = true;
                                         }
                                         
-                                    }else if(flagDialogo == true && flagLoja == true){
+                                    }else if(flagDialogo == true && flagLoja2 == true){
                                         DrawText("Aqui estão seus upgrades: ",dialogoPaulo.x,dialogoPaulo.y, 8, BLACK);
                                         DrawText("UPGRADEPLACEHOLDER1", dialogoPaulo.x,dialogoPaulo.y + 8, 8, BLACK); 
                                         DrawText("UPGRADEPLACEHOLDER2",dialogoPaulo.x,dialogoPaulo.y + 16, 8, BLACK);
