@@ -20,7 +20,7 @@ typedef struct Protagonista{
     Rectangle destRec;
     Ataque attacks[3];
     int healItemnumber;
-    long int abstractions;
+    int abstractions;
 
 }Protagonista;
 
@@ -268,7 +268,7 @@ int main(void){
 
     personagemPrincipal.sanityLevel = 100.0f;
     personagemPrincipal.healItemnumber = 0;
-    personagemPrincipal.abstractions = 0;
+    personagemPrincipal.abstractions = 100;
 
     Rectangle sourceRec = {40.0f, 0.0f, (float)stormheadRun_Width, (float)stormheadRun_Heigth};
     personagemPrincipal.sourceRec = sourceRec;
@@ -329,7 +329,7 @@ int main(void){
     Rectangle retanguloPauloConversa = {1344.0f, 38.0f, 100.0f, 140.0f};
     Rectangle dialogoPaulo = {personagemPrincipal.destRec.x, personagemPrincipal.destRec.y + 25.0f, 450.0f, 60.0f};
 
-    bool flagDialogo = false, flagLoja = false, flagLoja2 = false;
+    bool flagDialogo = false, flagLoja = false, flagLoja2 = false, flagItemComprado = false;
     int escolhaUpgrade = 0, contadorMovimentacao = 0;
     long long int contadorTempo = 0;    
 
@@ -538,9 +538,9 @@ int main(void){
                                     
                                     //Logica do botão de inicio de interação(tem um bug q n consigo resolver mas fds ~~ Rodrigo)
                                     DrawText("Pressione E para falar", ((int) personagemPrincipal.destRec.x - 30.0f), ((int) personagemPrincipal.destRec.y + 50.0f), 8, WHITE);
-                                    if(IsKeyDown(KEY_E) && flagDialogo == false){
+                                    if(IsKeyPressed(KEY_E) && flagDialogo == false){
                                         flagDialogo = true;
-                                    }else if(IsKeyDown(KEY_E) && flagDialogo == true){
+                                    }else if(IsKeyPressed(KEY_E) && flagDialogo == true){
                                         flagDialogo = false;
                                     }else if(flagDialogo == true){
                                         DrawRectangleRec(dialogoPaulo,GRAY);
@@ -554,52 +554,85 @@ int main(void){
                                         DrawText("daram abstrações, dê elas para mim que lhe deixarei mais forte",dialogoPaulo.x,dialogoPaulo.y + 24, 8, BLACK);
                                         DrawText("- Pressione L para acessar a loja",dialogoPaulo.x,dialogoPaulo.y + 32, 8, BLACK);
 
-                                        if(IsKeyDown(KEY_L)){
+                                        if(IsKeyPressed(KEY_L)){
                                             flagLoja = true;
                                         }
                                         
                                     }else if(flagDialogo == true && flagLoja == true){
                                         DrawText("Aqui estão seus upgrades e itens: ",dialogoPaulo.x,dialogoPaulo.y, 8, BLACK);
-                                        DrawText("UPGRADEPLACEHOLDER1", dialogoPaulo.x,dialogoPaulo.y + 8, 8, BLACK); 
-                                        DrawText("UPGRADEPLACEHOLDER2",dialogoPaulo.x,dialogoPaulo.y + 16, 8, BLACK);
-                                        DrawText("UPGRADEPLACEHOLDER3",dialogoPaulo.x,dialogoPaulo.y + 24, 8, BLACK);
+                                        DrawText("1. Cafeina - 50", dialogoPaulo.x,dialogoPaulo.y + 8, 8, BLACK); 
+                                        DrawText("2. Ponto extra - 80",dialogoPaulo.x,dialogoPaulo.y + 16, 8, BLACK);
+                                        DrawText("3. Chocolate - 40",dialogoPaulo.x,dialogoPaulo.y + 24, 8, BLACK);
                                         DrawText("4. Antidepressivos :3 - 100",dialogoPaulo.x,dialogoPaulo.y + 32, 8, BLACK);
 
                                         //Escolha item da loja(upgrades e item de cura)
-                                        if(IsKeyDown(KEY_KP_1)){
+                                        if(IsKeyPressed(KEY_KP_1)){
                                             escolhaUpgrade = 1;
-                                        }else if(IsKeyDown(KEY_KP_2)){
+                                        }else if(IsKeyPressed(KEY_KP_2)){
                                             escolhaUpgrade = 2;
-                                        }else if(IsKeyDown(KEY_KP_3)){
+                                        }else if(IsKeyPressed(KEY_KP_3)){
                                             escolhaUpgrade = 3;
-                                        }else if(IsKeyDown(KEY_KP_4)){
+                                        }else if(IsKeyPressed(KEY_KP_4)){
                                             escolhaUpgrade = 4;
                                         }
-
-                                        //Logica de compra da loja
+;
+                                        //Logica de compra da loja(Não sei pq mas as abstractions são cortadas pela metade em algum lugar, ent cortei os preços tb ~~ Rodrigo)
                                         switch(escolhaUpgrade){
-                                        case 1:                                       
+                                        case 1: 
+                                            if(personagemPrincipal.abstractions >= 50){
+
+                                                personagemPrincipal.attacks[0].attackLevel = 3;
+                                                personagemPrincipal.attacks[0].attackDamage = ((personagemPrincipal.attacks[0].attackNumber * personagemPrincipal.attacks[0].attackLevel * 10) + attackOneRng) / 5.0f; 
+                                                
+                                                personagemPrincipal.abstractions -= 50;
+                                                
+                                                
+                                                flagItemComprado = true;
+                                            }                                      
                                             break;
                                         case 2:
+                                            if(personagemPrincipal.abstractions >= 75){
+
+                                                personagemPrincipal.attacks[1].attackLevel = 3;
+                                                personagemPrincipal.attacks[1].attackDamage = ((personagemPrincipal.attacks[1].attackNumber * personagemPrincipal.attacks[1].attackLevel * 10) + attackTwoRng) / 5.0f;                                                 
+                                                personagemPrincipal.abstractions -= 75;
+                                                flagItemComprado = true;
+                                            }                                                                                
                                             break;
+                                            
                                         case 3:
+                                            if(personagemPrincipal.abstractions >= 40){
+
+                                                personagemPrincipal.attacks[2].attackLevel = 3;
+                                                personagemPrincipal.attacks[2].attackDamage = ((personagemPrincipal.attacks[2].attackNumber * personagemPrincipal.attacks[2].attackLevel * 10) + attackThreeRng) / 5.0f;                                                 
+                                                
+                                                personagemPrincipal.abstractions -= 40;
+                                                flagItemComprado = true;
+                                            }                                     
                                             break;
                                         case 4:
-                                            if(personagemPrincipal.abstractions < 100){
-                                                DrawText("Abstraia mais um pouco",dialogoPaulo.x,dialogoPaulo.y + 40, 8, BLACK);
-                                            }else{
+                                            if(personagemPrincipal.abstractions >= 100){
+
                                                 personagemPrincipal.healItemnumber++;
                                                 personagemPrincipal.abstractions -= 100;
+                                                flagItemComprado = true;
                                             }
                                             break;
+
                                         default:
                                             break;
                                         }
-                                        escolhaUpgrade = 0;
+
+                                        if(flagItemComprado == false)
+                                            DrawText("Abstraia mais um pouco",dialogoPaulo.x,dialogoPaulo.y + 40, 8, BLACK);
+                                        else
+                                            DrawText("Força que fica pior!",dialogoPaulo.x,dialogoPaulo.y + 40, 8, BLACK);
+                                        escolhaUpgrade = 0;  
                                     }
                         
                                 }else{
                                     flagDialogo = false;
+                                    flagItemComprado = false;
                                 }
                                 
                                 
@@ -684,9 +717,9 @@ int main(void){
                                     
                                     //Logica do botão de inicio de interação(Nada mudou por aqui, por que olhar mais? ~~ Rodrigo)
                                     DrawText("Pressione E para falar", ((int) personagemPrincipal.destRec.x - 30.0f), ((int) personagemPrincipal.destRec.y + 50.0f), 8, WHITE);
-                                    if(IsKeyDown(KEY_E) && flagDialogo == false){
+                                    if(IsKeyPressed(KEY_E) && flagDialogo == false){
                                         flagDialogo = true;
-                                    }else if(IsKeyDown(KEY_E) && flagDialogo == true){
+                                    }else if(IsKeyPressed(KEY_E) && flagDialogo == true){
                                         flagDialogo = false;
                                     }else if(flagDialogo == true){
                                         DrawRectangleRec(dialogoPaulo,GRAY);
@@ -705,47 +738,80 @@ int main(void){
                                         }
                                         
                                     }else if(flagDialogo == true && flagLoja2 == true){
-                                        DrawText("Aqui estão seus upgrades: ",dialogoPaulo.x,dialogoPaulo.y, 8, BLACK);
-                                        DrawText("UPGRADEPLACEHOLDER1", dialogoPaulo.x,dialogoPaulo.y + 8, 8, BLACK); 
-                                        DrawText("UPGRADEPLACEHOLDER2",dialogoPaulo.x,dialogoPaulo.y + 16, 8, BLACK);
-                                        DrawText("UPGRADEPLACEHOLDER3",dialogoPaulo.x,dialogoPaulo.y + 24, 8, BLACK);
+                                        DrawText("Aqui estão seus upgrades e itens: ",dialogoPaulo.x,dialogoPaulo.y, 8, BLACK);
+                                        DrawText("1. Cafeina - 50", dialogoPaulo.x,dialogoPaulo.y + 8, 8, BLACK); 
+                                        DrawText("2. Ponto extra - 75",dialogoPaulo.x,dialogoPaulo.y + 16, 8, BLACK);
+                                        DrawText("3. Chocolate - 40",dialogoPaulo.x,dialogoPaulo.y + 24, 8, BLACK);
                                         DrawText("4. Antidepressivos :3 - 100",dialogoPaulo.x,dialogoPaulo.y + 32, 8, BLACK);
 
                                         //Escolha item da loja(upgrades e item de cura)
-                                        if(IsKeyDown(KEY_KP_1)){
+                                        if(IsKeyPressed(KEY_KP_1)){
                                             escolhaUpgrade = 1;
-                                        }else if(IsKeyDown(KEY_KP_2)){
+                                        }else if(IsKeyPressed(KEY_KP_2)){
                                             escolhaUpgrade = 2;
-                                        }else if(IsKeyDown(KEY_KP_3)){
+                                        }else if(IsKeyPressed(KEY_KP_3)){
                                             escolhaUpgrade = 3;
-                                        }else if(IsKeyDown(KEY_KP_4)){
+                                        }else if(IsKeyPressed(KEY_KP_4)){
                                             escolhaUpgrade = 4;
                                         }
                                     
                                         //Logica de compra da loja
                                         switch(escolhaUpgrade){
-                                        case 1:                                       
+                                        case 1: 
+                                            if(personagemPrincipal.abstractions >= 50){
+
+                                                personagemPrincipal.attacks[0].attackLevel = 6;
+                                                personagemPrincipal.attacks[0].attackDamage = ((personagemPrincipal.attacks[0].attackNumber * personagemPrincipal.attacks[0].attackLevel * 10) + attackOneRng) / 5.0f; 
+                                                
+                                                personagemPrincipal.abstractions -= 50;
+                                                
+                                                
+                                                flagItemComprado = true;
+                                            }                                    
                                             break;
                                         case 2:
+                                            if(personagemPrincipal.abstractions >= 75){
+
+                                                personagemPrincipal.attacks[1].attackLevel = 6;
+                                                personagemPrincipal.attacks[1].attackDamage = ((personagemPrincipal.attacks[1].attackNumber * personagemPrincipal.attacks[1].attackLevel * 10) + attackTwoRng) / 5.0f;                                                 
+                                                personagemPrincipal.abstractions -= 75;
+                                                flagItemComprado = true;
+                                            }                                                                                
                                             break;
+                                            
                                         case 3:
+                                            if(personagemPrincipal.abstractions >= 40){
+
+                                                personagemPrincipal.attacks[2].attackLevel = 6;
+                                                personagemPrincipal.attacks[2].attackDamage = ((personagemPrincipal.attacks[2].attackNumber * personagemPrincipal.attacks[2].attackLevel * 10) + attackThreeRng) / 5.0f;                                                 
+                                                
+                                                personagemPrincipal.abstractions -= 40;
+                                                flagItemComprado = true;
+                                            }                                     
                                             break;
                                         case 4:
-                                            if(personagemPrincipal.abstractions < 100){
-                                                DrawText("Abstraia mais um pouco",dialogoPaulo.x,dialogoPaulo.y + 40, 8, BLACK);
-                                            }else{
+                                            if(personagemPrincipal.abstractions >= 100){
+
                                                 personagemPrincipal.healItemnumber++;
                                                 personagemPrincipal.abstractions -= 100;
+                                                flagItemComprado = true;
                                             }
                                             break;
+
                                         default:
                                             break;
                                         }
+
+                                        if(flagItemComprado == false)
+                                            DrawText("Abstraia mais um pouco",dialogoPaulo.x,dialogoPaulo.y + 40, 8, BLACK);
+                                        else
+                                            DrawText("Força que fica pior!",dialogoPaulo.x,dialogoPaulo.y + 40, 8, BLACK);
                                         escolhaUpgrade = 0;
                                     }
                         
                                 }else{
                                     flagDialogo = false;
+                                    flagItemComprado == false;
                                 }
                                 
                                 
