@@ -189,7 +189,12 @@ int main(void){
     bool stormheadAttack_active = false;
     int stormheadAttack_count = 0;
 
-    Rectangle retanguloTeste = {1394.0f, 38.0f, 38.0f, 126.0f};
+    Rectangle retanguloPaulo = {1394.0f, 38.0f, 38.0f, 126.0f};
+    Rectangle retanguloPauloConversa = {1344.0f, 38.0f, 100.0f, 140.0f};
+    Rectangle dialogoPaulo = {stormheadRun_destRect.x, stormheadRun_destRect.y + 25.0f, 450.0f, 60.0f};
+    bool flagDialogo = false, flagLoja = false;
+    int escolhaUpgrade = 0;
+    
 
 
     SetTargetFPS(60);
@@ -271,10 +276,13 @@ int main(void){
                 stormheadRun_sourceRect.y = runningAnimations(&stormheadRun_framecounter, &stormheadRun_framespeed, &stormheadRun_currentframe, stormheadRun_sourceRect.y, stormheadRun_Heigth, stormheadRun_nSprites);
             }
 
-            structureCollision(&stormheadRun_destRect,&retanguloTeste);
+            structureCollision(&stormheadRun_destRect,&retanguloPaulo);
 
             //Centralização da camera
-            cameraPersonagem.target = (Vector2) {stormheadRun_destRect.x + 55.0f, stormheadRun_destRect.y + 25.0f};
+            cameraPersonagem.target = (Vector2) {stormheadRun_destRect.x + 25.0f, stormheadRun_destRect.y + 25.0f};
+
+            dialogoPaulo.x = stormheadRun_destRect.x - 200.0f;
+            dialogoPaulo.y = stormheadRun_destRect.y + 75.0f;
 
             if(beginFlag){
 
@@ -295,11 +303,51 @@ int main(void){
                         BeginMode2D(cameraPersonagem);
                             ClearBackground(BLACK);
                             DrawTextureV(firstFase, positionMaps, WHITE);
-                            if(stormheadAttack_active){
+                                
+                            DrawTexturePro(stormheadRun, stormheadRun_sourceRect, stormheadRun_destRect, origin, rotation, RAYWHITE);
+
+                            if(CheckCollisionRecs(stormheadRun_destRect,retanguloPauloConversa)){
+                                
+                                DrawText("Pressione E para falar", ((int) stormheadRun_destRect.x - 30.0f), ((int) stormheadRun_destRect.y + 50.0f), 8, WHITE);
+                                if(IsKeyDown(KEY_E) && flagDialogo == false){
+                                    flagDialogo = true;
+                                }else if(IsKeyDown(KEY_E) && flagDialogo == true){
+                                    flagDialogo = false;
+                                }else if(flagDialogo == true){
+                                    DrawRectangleRec(dialogoPaulo,GRAY);
+                                }
+                            
+                                if(flagDialogo == true && flagLoja == false){
+                                    DrawText("Você, me acordou...Meu nome é Paulo Salgado, sou o professor de AVLC,", dialogoPaulo.x,dialogoPaulo.y, 8, BLACK); 
+                                    DrawText("mas não sou mal como os outros, estou aqui para lhe ajudar, se você conseguir",dialogoPaulo.x,dialogoPaulo.y + 8, 8, BLACK);
+                                    DrawText("passar dos desafios das cadeiras, conseguirá sair desse inferno, os inimigos",dialogoPaulo.x,dialogoPaulo.y + 16, 8, BLACK);
+                                    DrawText("daram abstrações, dê elas para mim que lhe deixarei mais forte",dialogoPaulo.x,dialogoPaulo.y + 24, 8, BLACK);
+                                    DrawText("- Pressione L para acessar a loja",dialogoPaulo.x,dialogoPaulo.y + 32, 8, BLACK);
+
+                                    if(IsKeyDown(KEY_L)){
+                                        flagLoja = true;
+                                    }
+                                    
+                                }else if(flagDialogo == true && flagLoja == true){
+                                    DrawText("Aqui estão seus upgrades: ",dialogoPaulo.x,dialogoPaulo.y, 8, BLACK);
+                                    DrawText("UPGRADEPLACEHOLDER1", dialogoPaulo.x,dialogoPaulo.y + 8, 8, BLACK); 
+                                    DrawText("UPGRADEPLACEHOLDER2",dialogoPaulo.x,dialogoPaulo.y + 16, 8, BLACK);
+                                    DrawText("UPGRADEPLACEHOLDER3",dialogoPaulo.x,dialogoPaulo.y + 24, 8, BLACK);
+
+                                    if(IsKeyDown(KEY_KP_1)){
+                                        escolhaUpgrade = 1;
+                                    }else if(IsKeyDown(KEY_KP_2)){
+                                        escolhaUpgrade = 2;
+                                    }else if(IsKeyDown(KEY_KP_3)){
+                                        escolhaUpgrade = 3;
+                                    }
+                                }
 
                             }else{
-                                DrawTexturePro(stormheadRun, stormheadRun_sourceRect, stormheadRun_destRect, origin, rotation, RAYWHITE);
+                                flagDialogo = false;
                             }
+                            
+                            
                         EndMode2D();
 
                     }else if(flagFirstFase == true && flagSecondFase == true){
