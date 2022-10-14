@@ -78,6 +78,18 @@ int main(void){
     Sound musicahist = LoadSound ("Assets/Sounds/musicahist.mp3");
     PlaySound (musicahist);
 
+    Vector2 enemiesVector[8] = {0};
+    Vector2 enemiesVector2[8] = {0};
+
+    for(int cnt2 = 0; cnt2 < 8; cnt2++)
+        enemiesVector[cnt2] = randomVector(0,1400,0,700);
+
+    for(int cnt2 = 0; cnt2 < 8; cnt2++)
+        enemiesVector2[cnt2] = randomVector(0,1400,0,700);
+
+
+
+
     //Variaveis de animação para inimigos/protagonista
     int mudRun_nSprites = 6;
     int mudRun_Width = mudRun.width;
@@ -103,19 +115,19 @@ int main(void){
 
     for(int cnt1 = 0; cnt1 < 8; cnt1++){
 
-        //Dados base inimigos iniciais
+        //Dados base inimigos finais
         mudEnemy[cnt1].hp = 500.0f;
         mudEnemy[cnt1].weakness = 3;
         mudEnemy[cnt1].death = false;
 
-        //Ataques inimigos iniciais
+        //Ataques inimigos finais
         mudEnemy[cnt1].attack[0].attackNumber = 1;
         mudEnemy[cnt1].attack[0].attackLevel = 12;
         mudEnemy[cnt1].attack[0].attackDamage = ((mudEnemy[cnt1].attack[0].attackNumber * mudEnemy[cnt1].attack[0].attackLevel * 10) + GetRandomValue(1,50)) / 2.0f;
 
         //Posição inimigos iniciais
-        mudEnemy[cnt1].destRec.x =  screenWidth/2.0f - 82;
-        mudEnemy[cnt1].destRec.y =  screenHeight/2.0f - 46;
+        mudEnemy[cnt1].destRec.x =  enemiesVector2[cnt1].x;
+        mudEnemy[cnt1].destRec.y =  enemiesVector2[cnt1].y;
         mudEnemy[cnt1].destRec.width = mudRun_Width*2.0f;
         mudEnemy[cnt1].destRec.height =  mudRun_Heigth*2.0f;
     }
@@ -193,8 +205,8 @@ int main(void){
         wheelEnemy[cnt1].attack[0].attackDamage = ((wheelEnemy[cnt1].attack[0].attackNumber * wheelEnemy[cnt1].attack[0].attackLevel * 10) + GetRandomValue(1,50)) / 2.0f;
 
         //Posição inimigos iniciais
-        wheelEnemy[cnt1].destRec.x =  screenWidth/2.0f - 82;
-        wheelEnemy[cnt1].destRec.y =  screenHeight/2.0f - 46;
+        wheelEnemy[cnt1].destRec.x =  enemiesVector[cnt1].x;
+        wheelEnemy[cnt1].destRec.y =  enemiesVector[cnt1].y;
         wheelEnemy[cnt1].destRec.width = wheelRun_Width*2.0f;
         wheelEnemy[cnt1].destRec.height =  wheelRun_Heigth*2.0f;
     }
@@ -267,15 +279,18 @@ int main(void){
     //Ataques iniciais do protagonista
     personagemPrincipal.attacks[0].attackNumber = 1;
     personagemPrincipal.attacks[0].attackLevel = 1;
-    personagemPrincipal.attacks[0].attackDamage = ((personagemPrincipal.attacks[0].attackNumber * personagemPrincipal.attacks[0].attackLevel * 10) + GetRandomValue(1,10)) / 5.0f;
+    int attackOneRng = GetRandomValue(1,10);
+    personagemPrincipal.attacks[0].attackDamage = ((personagemPrincipal.attacks[0].attackNumber * personagemPrincipal.attacks[0].attackLevel * 10) + attackOneRng) / 5.0f;
 
     personagemPrincipal.attacks[1].attackNumber = 2;
     personagemPrincipal.attacks[1].attackLevel = 1;
-    personagemPrincipal.attacks[1].attackDamage = ((personagemPrincipal.attacks[1].attackNumber * personagemPrincipal.attacks[1].attackLevel * 10) + GetRandomValue(1,10)) / 5.0f;
+    int attackTwoRng = GetRandomValue(1,10);
+    personagemPrincipal.attacks[1].attackDamage = ((personagemPrincipal.attacks[1].attackNumber * personagemPrincipal.attacks[1].attackLevel * 10) + attackTwoRng) / 5.0f;
 
     personagemPrincipal.attacks[2].attackNumber = 3;
     personagemPrincipal.attacks[2].attackLevel = 1;
-    personagemPrincipal.attacks[2].attackDamage = ((personagemPrincipal.attacks[2].attackNumber * personagemPrincipal.attacks[2].attackLevel * 10) + GetRandomValue(1,10)) / 5.0f;
+    int attackThreeRng = GetRandomValue(1,10);
+    personagemPrincipal.attacks[2].attackDamage = ((personagemPrincipal.attacks[2].attackNumber * personagemPrincipal.attacks[2].attackLevel * 10) + attackThreeRng) / 5.0f;
     
     /*
     Rectangle stormheadAttack_sourceRect = {0.0f, 0.0f, (float)stormheadAttack_Width, (float)stormheadAttack_Heigth};
@@ -299,7 +314,6 @@ int main(void){
     int stormheadAttack_count = 0;
     */
 
-    Vector2 enemiesVector[8] = {0};
     Rectangle barlife_sourceRect = {0.0f, 0.0f, (float)barlife_Width, (float)barlife_Heigth};
     Rectangle barlife_destRect[8];
 
@@ -310,7 +324,6 @@ int main(void){
         barlife_destRect[cnt4].height = barlife_Heigth/4;
     }
 
-    Vector2 enemiesVector2[8] = {0};
 
     Rectangle retanguloPaulo = {1394.0f, 38.0f, 38.0f, 126.0f};
     Rectangle retanguloPauloConversa = {1344.0f, 38.0f, 100.0f, 140.0f};
@@ -318,15 +331,7 @@ int main(void){
 
     bool flagDialogo = false, flagLoja = false, flagLoja2 = false;
     int escolhaUpgrade = 0, contadorMovimentacao = 0;
-    long long int contadorTempo = 0;
-
-    for(int cnt2 = 0; cnt2 < 8; cnt2++)
-        enemiesVector[cnt2] = randomVector(-700,700,-350,350);
-
-    for(int cnt2 = 0; cnt2 < 8; cnt2++)
-        enemiesVector2[cnt2] = randomVector(-700,700,-350,350);
-    
-
+    long long int contadorTempo = 0;    
 
     SetTargetFPS(60);
 
@@ -413,6 +418,13 @@ int main(void){
 
             structureCollision(&personagemPrincipal.destRec,&retanguloPaulo);
 
+            for(int cnt5 = 0; cnt5 < 8; cnt5++){
+                if(CheckCollisionRecs(personagemPrincipal.destRec,wheelEnemy[cnt5].destRec)){
+                    //Muda pra tela de batalha
+                    DrawText("HEY LISTEN", ((int) personagemPrincipal.destRec.x - 30.0f), ((int) personagemPrincipal.destRec.y + 50.0f), 8, WHITE);
+                }
+            }
+
             //Centralização da camera
             cameraPersonagem.target = (Vector2) {personagemPrincipal.destRec.x + 25.0f, personagemPrincipal.destRec.y + 25.0f};
 
@@ -423,6 +435,8 @@ int main(void){
             if(beginFlag){
 
                     if(!flagFirstFase){
+
+                        //Prólogo da historia
                         BeginDrawing();
                             PlaySound (musicaF1);
                             DrawTextureV(tela2_backgroundT, position, WHITE);
@@ -432,20 +446,30 @@ int main(void){
                             DrawText("bem, veremos...", 100, 420, 30, WHITE);
                             DrawText("Pressione I para sofrer", 100, 500, 30, WHITE);
                         EndDrawing();
+
                     }else if(flagFirstFase == true && flagSecondFase == false){
+                        
+                        //Primeira fase
+
                         BeginDrawing();
+                        
                             StopSound (musicahist);
+
                             //Definição de bordas do mapa
                             mapBorders(&personagemPrincipal.destRec.x,&personagemPrincipal.destRec.y,personagemPrincipal.destRec.width,personagemPrincipal.destRec.height, 38, 38, 1562, 755);
                             //for(int cnt3 = 0; cnt3 < 8; cnt3++){ Tentei fazer funcionar e n deu rip dms ~~Rodrigo :(
                                 //mapBorders(&wheelRun_destRect[cnt3].x,&wheelRun_destRect[cnt3].y,wheelRun_destRect[cnt3].width,wheelRun_destRect[cnt3].height, 38, 38, 1562, 755);
                             //}
-                            BeginMode2D(cameraPersonagem);
-                                ClearBackground(BLACK);
-                                DrawTextureV(firstFase, positionMaps, WHITE);
-                                    
-                               DrawTexturePro(stormheadRun, personagemPrincipal.sourceRec, personagemPrincipal.destRec, origin, rotation, RAYWHITE);
 
+                            //Inicio da camera
+                            BeginMode2D(cameraPersonagem);
+
+                                //Desenho do background, fase e protagonista
+                                ClearBackground(BLACK);
+                                DrawTextureV(firstFase, positionMaps, WHITE);                                   
+                                DrawTexturePro(stormheadRun, personagemPrincipal.sourceRec, personagemPrincipal.destRec, origin, rotation, RAYWHITE);
+
+                                //Movimentação dos inimigos
                                 wheelRun_framecounter++;
                                 if(contadorTempo >=0 && contadorTempo <= 50){
 
@@ -486,10 +510,21 @@ int main(void){
                                     
                                 }
 
-                                for(int cnt3 = 0; cnt3 < 8; cnt3++){
-                                    DrawTexturePro(wheelRun, wheelRun_sourceRect, wheelEnemy[cnt3].destRec, enemiesVector[cnt3], rotation, RAYWHITE);
+                                //Colisão com os inimigos
+                                for(int cnt5 = 0; cnt5 < 8; cnt5++){
+                                    if(CheckCollisionRecs(personagemPrincipal.destRec,wheelEnemy[cnt5].destRec)){
+                                        //Muda pra tela de batalha
+                                        DrawText("HEY LISTEN", ((int) personagemPrincipal.destRec.x - 30.0f), ((int) personagemPrincipal.destRec.y + 50.0f), 8, WHITE);
+                                    }
                                 }
 
+                                //Desenho dos inimigos
+                                for(int cnt3 = 0; cnt3 < 8; cnt3++){
+
+                                    DrawTexturePro(wheelRun, wheelRun_sourceRect, wheelEnemy[cnt3].destRec, origin, rotation, RAYWHITE);
+                                }
+
+                                //Desenho da barra de vida(fase de testes)
                                 Rectangle barlife_sourceRect = {0.0f, 0.0f, (float)barlife_Width, (float)barlife_Heigth};
                                 
                                 for(int cnt4 = 0; cnt4 < 8; cnt4++){
@@ -498,9 +533,10 @@ int main(void){
                                     //structureCollision(&personagemPrincipal.destRec,&wheelRun_destRect[cnt4]);
                                 }
  
-                                
+                                //Interação historia / lojinha
                                 if(CheckCollisionRecs(personagemPrincipal.destRec,retanguloPauloConversa)){
-
+                                    
+                                    //Logica do botão de inicio de interação(tem um bug q n consigo resolver mas fds ~~ Rodrigo)
                                     DrawText("Pressione E para falar", ((int) personagemPrincipal.destRec.x - 30.0f), ((int) personagemPrincipal.destRec.y + 50.0f), 8, WHITE);
                                     if(IsKeyDown(KEY_E) && flagDialogo == false){
                                         flagDialogo = true;
@@ -509,7 +545,8 @@ int main(void){
                                     }else if(flagDialogo == true){
                                         DrawRectangleRec(dialogoPaulo,GRAY);
                                     }
-                                
+
+                                    //Interação historia no primeiro if, e no else if interação loja
                                     if(flagDialogo == true && flagLoja == false){
                                         DrawText("Você, me acordou...Meu nome é Paulo Salgado, sou o professor de AVLC,", dialogoPaulo.x,dialogoPaulo.y, 8, BLACK); 
                                         DrawText("mas não sou mal como os outros, estou aqui para lhe ajudar, se você conseguir",dialogoPaulo.x,dialogoPaulo.y + 8, 8, BLACK);
@@ -528,6 +565,7 @@ int main(void){
                                         DrawText("UPGRADEPLACEHOLDER3",dialogoPaulo.x,dialogoPaulo.y + 24, 8, BLACK);
                                         DrawText("4. Antidepressivos :3 - 100",dialogoPaulo.x,dialogoPaulo.y + 32, 8, BLACK);
 
+                                        //Escolha item da loja(upgrades e item de cura)
                                         if(IsKeyDown(KEY_KP_1)){
                                             escolhaUpgrade = 1;
                                         }else if(IsKeyDown(KEY_KP_2)){
@@ -537,7 +575,8 @@ int main(void){
                                         }else if(IsKeyDown(KEY_KP_4)){
                                             escolhaUpgrade = 4;
                                         }
-                                    
+
+                                        //Logica de compra da loja
                                         switch(escolhaUpgrade){
                                         case 1:                                       
                                             break;
@@ -572,17 +611,21 @@ int main(void){
                         retanguloPauloConversa.x = 1440.0f;
                         escolhaUpgrade = 0;
 
+                        //Segunda fase
+
                         BeginDrawing();
 
                             mapBorders(&personagemPrincipal.destRec.x,&personagemPrincipal.destRec.y,personagemPrincipal.destRec.width,personagemPrincipal.destRec.height, 38, 38, 1562, 755);
 
+                            //Inicio da camera
                             BeginMode2D(cameraPersonagem);
-                                ClearBackground(BLACK);
-                                
-                                DrawTextureV(secondFase, positionMaps, WHITE);
-                                    
+
+                                 //Desenho do background, fase e protagonista
+                                ClearBackground(BLACK);                               
+                                DrawTextureV(secondFase, positionMaps, WHITE);                                   
                                 DrawTexturePro(stormheadRun, personagemPrincipal.sourceRec, personagemPrincipal.destRec, origin, rotation, RAYWHITE);
 
+                                //Movimentação dos inimigos
                                 mudRun_framecounter++;
                                 if(contadorTempo >=0 && contadorTempo <= 50){
 
@@ -623,12 +666,23 @@ int main(void){
                                     
                                 }
 
-                                for(int cnt3 = 0; cnt3 < 8; cnt3++){
-                                    DrawTexturePro(mudRun, mudRun_sourceRect, mudEnemy[cnt3].destRec, enemiesVector2[cnt3], rotation, RAYWHITE);
+                                //Colisão com os inimigos
+                                for(int cnt5 = 0; cnt5 < 8; cnt5++){
+                                    if(CheckCollisionRecs(personagemPrincipal.destRec,mudEnemy[cnt5].destRec)){
+                                        //Muda pra tela de batalha
+                                        DrawText("HEY LISTEN", ((int) personagemPrincipal.destRec.x - 30.0f), ((int) personagemPrincipal.destRec.y + 50.0f), 8, WHITE);
+                                    }
                                 }
 
+                                //Desenho dos inimigos
+                                for(int cnt3 = 0; cnt3 < 8; cnt3++){
+                                    DrawTexturePro(mudRun, mudRun_sourceRect, mudEnemy[cnt3].destRec, origin, rotation, RAYWHITE);
+                                }
+
+                                //Interação historia / lojinha
                                 if(CheckCollisionRecs(personagemPrincipal.destRec,retanguloPauloConversa)){
                                     
+                                    //Logica do botão de inicio de interação(Nada mudou por aqui, por que olhar mais? ~~ Rodrigo)
                                     DrawText("Pressione E para falar", ((int) personagemPrincipal.destRec.x - 30.0f), ((int) personagemPrincipal.destRec.y + 50.0f), 8, WHITE);
                                     if(IsKeyDown(KEY_E) && flagDialogo == false){
                                         flagDialogo = true;
@@ -638,6 +692,7 @@ int main(void){
                                         DrawRectangleRec(dialogoPaulo,GRAY);
                                     }
                                 
+                                    //Interação historia no primeiro if, e no else if interação loja
                                     if(flagDialogo == true && flagLoja2 == false){
                                         DrawText("Uau! São poucos os que passam de [PLACEHOLDERNAME] sem ficar insanos, talvez", dialogoPaulo.x,dialogoPaulo.y, 8, BLACK); 
                                         DrawText("você realmente seja quem irá superar todos os desafios?! Não, não devemos nos pre",dialogoPaulo.x,dialogoPaulo.y + 8, 8, BLACK);
@@ -656,6 +711,7 @@ int main(void){
                                         DrawText("UPGRADEPLACEHOLDER3",dialogoPaulo.x,dialogoPaulo.y + 24, 8, BLACK);
                                         DrawText("4. Antidepressivos :3 - 100",dialogoPaulo.x,dialogoPaulo.y + 32, 8, BLACK);
 
+                                        //Escolha item da loja(upgrades e item de cura)
                                         if(IsKeyDown(KEY_KP_1)){
                                             escolhaUpgrade = 1;
                                         }else if(IsKeyDown(KEY_KP_2)){
@@ -666,6 +722,7 @@ int main(void){
                                             escolhaUpgrade = 4;
                                         }
                                     
+                                        //Logica de compra da loja
                                         switch(escolhaUpgrade){
                                         case 1:                                       
                                             break;
