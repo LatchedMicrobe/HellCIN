@@ -37,3 +37,8 @@ void structureCollision(Rectangle *playerRec, Rectangle *structureRec){
     }
 
 }
+
+Vector2 randomVector(int minX, int maxX, int minY,int maxY){
+    Vector2 randVec = {((float)GetRandomValue(minX, maxX)), ((float)GetRandomValue(minY,maxY))};
+    return randVec;
+}

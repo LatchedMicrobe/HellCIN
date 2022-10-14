@@ -24,7 +24,7 @@ int main(void){
 
     Sound initialSound = LoadSound("./Assets/Sounds/soundInitial.wav");
     Texture2D firstFase = LoadTexture("./Assets/Maps/Mapa.png");
-    Texture2D secondFase = LoadTexture("./Assets/Maps/Mapa2.png");
+    Texture2D secondFase = LoadTexture("./Assets/Maps/mapa2.png");
     Vector2 positionMaps = { (float)(screenWidth/2 - firstFase.width/2), (float)(screenHeight/2 - firstFase.height/2) };
     Vector2 origin = {0.0f, 0.0f};
     
@@ -122,10 +122,18 @@ int main(void){
 
 
     Rectangle wheelRun_sourceRect = {0.0f, 0.0f, (float)wheelRun_Width, (float)wheelRun_Heigth};
-    Rectangle wheelRun_destRect = {screenWidth/2.0f - 82, screenHeight/2.0f - 46, wheelRun_Width*2.0f, wheelRun_Heigth*2.0f };
+    Rectangle wheelRun_destRect[8];
+
 
     Rectangle wheelCharge_sourceRect = {0.0f, 0.0f, (float)wheelCharge_Width, (float)wheelCharge_Heigth};
-    Rectangle wheelCharge_destRect = {screenWidth/2.0f - 82, screenHeight/2.0f - 46, wheelCharge_Width*2.0f, wheelCharge_Heigth*2.0f };
+    Rectangle wheelCharge_destRect = {screenWidth/2.0f - 82, screenHeight/2.0f - 46, wheelRun_Width*2.0f, wheelRun_Heigth*2.0f };
+
+    for(int cnt1 = 0; cnt1 < 8; cnt1++){
+        wheelRun_destRect[cnt1].x =  screenWidth/2.0f - 82;
+        wheelRun_destRect[cnt1].y =  screenHeight/2.0f - 46;
+        wheelRun_destRect[cnt1].width = wheelAttack_Width*2.0f;
+        wheelRun_destRect[cnt1].height =  wheelAttack_Heigth*2.0f;
+    }
 
     Rectangle wheelAttack_sourceRect = {0.0f, 0.0f, (float)wheelAttack_Width, (float)wheelAttack_Heigth};
     Rectangle wheelAttack_destRect = {screenWidth/2.0f - 82, screenHeight/2.0f - 46, wheelAttack_Width*2.0f, wheelAttack_Heigth*2.0f };
@@ -181,7 +189,7 @@ int main(void){
     cameraPersonagem.target = (Vector2){stormheadRun_destRect.x + 55.0f, stormheadRun_destRect.y + 25.0f};
     cameraPersonagem.offset = (Vector2){screenWidth/2.0f,screenHeight/2.0f};
     cameraPersonagem.rotation = 0.0f;
-    cameraPersonagem.zoom = 3.5f;    
+    cameraPersonagem.zoom = 1.0f;    
 
     int stormheadRun_framecounter = 0;
     int stormheadRun_framespeed = 8;
@@ -193,11 +201,16 @@ int main(void){
     bool stormheadAttack_active = false;
     int stormheadAttack_count = 0;
 
+    Vector2 enemiesVector[8] = {0};
     Rectangle retanguloPaulo = {1394.0f, 38.0f, 38.0f, 126.0f};
     Rectangle retanguloPauloConversa = {1344.0f, 38.0f, 100.0f, 140.0f};
     Rectangle dialogoPaulo = {stormheadRun_destRect.x, stormheadRun_destRect.y + 25.0f, 450.0f, 60.0f};
     bool flagDialogo = false, flagLoja = false;
     int escolhaUpgrade = 0;
+
+    for(int cnt2 = 0; cnt2 < 8; cnt2++)
+        enemiesVector[cnt2] = randomVector(-700,700,-350,350);
+    
     
 
 
@@ -293,78 +306,163 @@ int main(void){
 
             if(beginFlag){
 
-                BeginDrawing();
-
                     if(!flagFirstFase){
-                        PlaySound (musicaF1);
-                        DrawTextureV(tela2_backgroundT, position, WHITE);
-                        DrawText("Após passar pelo ENEM você, 'estudante', agora se botou numa enrascada ainda maior", 100, 300, 30, WHITE);
-                        DrawText("o HELLCIN, será que você irá superar estes novos desafios? Ou ficará no caminho como", 100, 340, 30, WHITE);
-                        DrawText("muitos outros antes de você, que perderam a sanidade frente aos novos desafios?", 100, 380, 30, WHITE);
-                        DrawText("bem, veremos...", 100, 420, 30, WHITE);
-                        DrawText("Pressione I para sofrer", 100, 500, 30, WHITE);
+                        BeginDrawing();
+                            PlaySound (musicaF1);
+                            DrawTextureV(tela2_backgroundT, position, WHITE);
+                            DrawText("Após passar pelo ENEM você, 'estudante', agora se botou numa enrascada ainda maior", 100, 300, 30, WHITE);
+                            DrawText("o HELLCIN, será que você irá superar estes novos desafios? Ou ficará no caminho como", 100, 340, 30, WHITE);
+                            DrawText("muitos outros antes de você, que perderam a sanidade frente aos novos desafios?", 100, 380, 30, WHITE);
+                            DrawText("bem, veremos...", 100, 420, 30, WHITE);
+                            DrawText("Pressione I para sofrer", 100, 500, 30, WHITE);
+                        EndDrawing();
                     }else if(flagFirstFase == true && flagSecondFase == false){
-                        StopSound (musicahist);
-                        //Definição de bordas do mapa
-                        mapBorders(&stormheadRun_destRect.x,&stormheadRun_destRect.y,stormheadRun_destRect.width,stormheadRun_destRect.height, 38, 38, 1562, 755);
+                        BeginDrawing();
+                            StopSound (musicahist);
+                            //Definição de bordas do mapa
+                            mapBorders(&stormheadRun_destRect.x,&stormheadRun_destRect.y,stormheadRun_destRect.width,stormheadRun_destRect.height, 38, 38, 1562, 755);
 
-                        BeginMode2D(cameraPersonagem);
-                            ClearBackground(BLACK);
-                            DrawTextureV(firstFase, positionMaps, WHITE);
-                                
-                            DrawTexturePro(stormheadRun, stormheadRun_sourceRect, stormheadRun_destRect, origin, rotation, RAYWHITE);
-
-                            if(CheckCollisionRecs(stormheadRun_destRect,retanguloPauloConversa)){
-                                
-                                DrawText("Pressione E para falar", ((int) stormheadRun_destRect.x - 30.0f), ((int) stormheadRun_destRect.y + 50.0f), 8, WHITE);
-                                if(IsKeyDown(KEY_E) && flagDialogo == false){
-                                    flagDialogo = true;
-                                }else if(IsKeyDown(KEY_E) && flagDialogo == true){
-                                    flagDialogo = false;
-                                }else if(flagDialogo == true){
-                                    DrawRectangleRec(dialogoPaulo,GRAY);
-                                }
-                            
-                                if(flagDialogo == true && flagLoja == false){
-                                    DrawText("Você, me acordou...Meu nome é Paulo Salgado, sou o professor de AVLC,", dialogoPaulo.x,dialogoPaulo.y, 8, BLACK); 
-                                    DrawText("mas não sou mal como os outros, estou aqui para lhe ajudar, se você conseguir",dialogoPaulo.x,dialogoPaulo.y + 8, 8, BLACK);
-                                    DrawText("passar dos desafios das cadeiras, conseguirá sair desse inferno, os inimigos",dialogoPaulo.x,dialogoPaulo.y + 16, 8, BLACK);
-                                    DrawText("daram abstrações, dê elas para mim que lhe deixarei mais forte",dialogoPaulo.x,dialogoPaulo.y + 24, 8, BLACK);
-                                    DrawText("- Pressione L para acessar a loja",dialogoPaulo.x,dialogoPaulo.y + 32, 8, BLACK);
-
-                                    if(IsKeyDown(KEY_L)){
-                                        flagLoja = true;
-                                    }
+                            BeginMode2D(cameraPersonagem);
+                                ClearBackground(BLACK);
+                                DrawTextureV(firstFase, positionMaps, WHITE);
                                     
-                                }else if(flagDialogo == true && flagLoja == true){
-                                    DrawText("Aqui estão seus upgrades: ",dialogoPaulo.x,dialogoPaulo.y, 8, BLACK);
-                                    DrawText("UPGRADEPLACEHOLDER1", dialogoPaulo.x,dialogoPaulo.y + 8, 8, BLACK); 
-                                    DrawText("UPGRADEPLACEHOLDER2",dialogoPaulo.x,dialogoPaulo.y + 16, 8, BLACK);
-                                    DrawText("UPGRADEPLACEHOLDER3",dialogoPaulo.x,dialogoPaulo.y + 24, 8, BLACK);
-
-                                    if(IsKeyDown(KEY_KP_1)){
-                                        escolhaUpgrade = 1;
-                                    }else if(IsKeyDown(KEY_KP_2)){
-                                        escolhaUpgrade = 2;
-                                    }else if(IsKeyDown(KEY_KP_3)){
-                                        escolhaUpgrade = 3;
-                                    }
+                                DrawTexturePro(stormheadRun, stormheadRun_sourceRect, stormheadRun_destRect, origin, rotation, RAYWHITE);
+                            
+                                for(int cnt3 = 0; cnt3 < 8; cnt3++){
+                                    DrawTexturePro(mudRun, mudRun_sourceRect, wheelRun_destRect[cnt3], enemiesVector[cnt3], rotation, RAYWHITE);
                                 }
 
-                            }else{
-                                flagDialogo = false;
-                            }
-                            
-                            
-                        EndMode2D();
 
+                                if(CheckCollisionRecs(stormheadRun_destRect,retanguloPauloConversa)){
+                                    
+                                    DrawText("Pressione E para falar", ((int) stormheadRun_destRect.x - 30.0f), ((int) stormheadRun_destRect.y + 50.0f), 8, WHITE);
+                                    if(IsKeyDown(KEY_E) && flagDialogo == false){
+                                        flagDialogo = true;
+                                    }else if(IsKeyDown(KEY_E) && flagDialogo == true){
+                                        flagDialogo = false;
+                                    }else if(flagDialogo == true){
+                                        DrawRectangleRec(dialogoPaulo,GRAY);
+                                    }
+                                
+                                    if(flagDialogo == true && flagLoja == false){
+                                        DrawText("Você, me acordou...Meu nome é Paulo Salgado, sou o professor de AVLC,", dialogoPaulo.x,dialogoPaulo.y, 8, BLACK); 
+                                        DrawText("mas não sou mal como os outros, estou aqui para lhe ajudar, se você conseguir",dialogoPaulo.x,dialogoPaulo.y + 8, 8, BLACK);
+                                        DrawText("passar dos desafios das cadeiras, conseguirá sair desse inferno, os inimigos",dialogoPaulo.x,dialogoPaulo.y + 16, 8, BLACK);
+                                        DrawText("daram abstrações, dê elas para mim que lhe deixarei mais forte",dialogoPaulo.x,dialogoPaulo.y + 24, 8, BLACK);
+                                        DrawText("- Pressione L para acessar a loja",dialogoPaulo.x,dialogoPaulo.y + 32, 8, BLACK);
+
+                                        if(IsKeyDown(KEY_L)){
+                                            flagLoja = true;
+                                        }
+                                        
+                                    }else if(flagDialogo == true && flagLoja == true){
+                                        DrawText("Aqui estão seus upgrades: ",dialogoPaulo.x,dialogoPaulo.y, 8, BLACK);
+                                        DrawText("UPGRADEPLACEHOLDER1", dialogoPaulo.x,dialogoPaulo.y + 8, 8, BLACK); 
+                                        DrawText("UPGRADEPLACEHOLDER2",dialogoPaulo.x,dialogoPaulo.y + 16, 8, BLACK);
+                                        DrawText("UPGRADEPLACEHOLDER3",dialogoPaulo.x,dialogoPaulo.y + 24, 8, BLACK);
+
+                                        if(IsKeyDown(KEY_KP_1)){
+                                            escolhaUpgrade = 1;
+                                        }else if(IsKeyDown(KEY_KP_2)){
+                                            escolhaUpgrade = 2;
+                                        }else if(IsKeyDown(KEY_KP_3)){
+                                            escolhaUpgrade = 3;
+                                        }
+                                    
+                                        switch(escolhaUpgrade){
+                                        case 1:                                       
+                                            break;
+                                        case 2:
+                                            break;
+                                        case 3:
+                                            break;
+                                        default:
+                                            break;
+                                        }
+                                        
+                                    }
+                        
+                                }else{
+                                    flagDialogo = false;
+                                }
+                                
+                                
+                            EndMode2D();
+                        EndDrawing();
                     }else if(flagFirstFase == true && flagSecondFase == true){
 
-                        ClearBackground(BLACK);
-                        DrawTextureV(secondFase, positionMaps, WHITE);
+                        flagDialogo = false;
+                        flagLoja = false;
+                        escolhaUpgrade = 0;
+
+                        BeginDrawing();
+
+                            mapBorders(&stormheadRun_destRect.x,&stormheadRun_destRect.y,stormheadRun_destRect.width,stormheadRun_destRect.height, 38, 38, 1562, 755);
+
+                            BeginMode2D(cameraPersonagem);
+                                ClearBackground(BLACK);
+                                
+                                DrawTextureV(secondFase, positionMaps, WHITE);
+                                    
+                                DrawTexturePro(stormheadRun, stormheadRun_sourceRect, stormheadRun_destRect, origin, rotation, RAYWHITE);
+
+                                if(CheckCollisionRecs(stormheadRun_destRect,retanguloPauloConversa)){
+                                    
+                                    DrawText("Pressione E para falar", ((int) stormheadRun_destRect.x - 30.0f), ((int) stormheadRun_destRect.y + 50.0f), 8, WHITE);
+                                    if(IsKeyDown(KEY_E) && flagDialogo == false){
+                                        flagDialogo = true;
+                                    }else if(IsKeyDown(KEY_E) && flagDialogo == true){
+                                        flagDialogo = false;
+                                    }else if(flagDialogo == true){
+                                        DrawRectangleRec(dialogoPaulo,GRAY);
+                                    }
+                                
+                                    if(flagDialogo == true && flagLoja == false){
+                                        DrawText("Uau! São poucos os que passam de [PLACEHOLDERNAME] sem ficar insanos, talvez", dialogoPaulo.x,dialogoPaulo.y, 8, BLACK); 
+                                        DrawText("você realmente seja quem irá superar todos os desafios?! Não, não devemos nos pre",dialogoPaulo.x,dialogoPaulo.y + 8, 8, BLACK);
+                                        DrawText("-cipitar ainda, você ainda tem mais desafios pela frente, e eu lhe ajudarei no que",dialogoPaulo.x,dialogoPaulo.y + 16, 8, BLACK);
+                                        DrawText("puder, agora vá meu fiel aluno, e supere mais um obstáculo em sua jornada",dialogoPaulo.x,dialogoPaulo.y + 24, 8, BLACK);
+                                        DrawText("- Pressione L para acessar a loja",dialogoPaulo.x,dialogoPaulo.y + 32, 8, BLACK);
+
+                                        if(IsKeyDown(KEY_L)){
+                                            flagLoja = true;
+                                        }
+                                        
+                                    }else if(flagDialogo == true && flagLoja == true){
+                                        DrawText("Aqui estão seus upgrades: ",dialogoPaulo.x,dialogoPaulo.y, 8, BLACK);
+                                        DrawText("UPGRADEPLACEHOLDER1", dialogoPaulo.x,dialogoPaulo.y + 8, 8, BLACK); 
+                                        DrawText("UPGRADEPLACEHOLDER2",dialogoPaulo.x,dialogoPaulo.y + 16, 8, BLACK);
+                                        DrawText("UPGRADEPLACEHOLDER3",dialogoPaulo.x,dialogoPaulo.y + 24, 8, BLACK);
+
+                                        if(IsKeyDown(KEY_KP_1)){
+                                            escolhaUpgrade = 1;
+                                        }else if(IsKeyDown(KEY_KP_2)){
+                                            escolhaUpgrade = 2;
+                                        }else if(IsKeyDown(KEY_KP_3)){
+                                            escolhaUpgrade = 3;
+                                        }
+                                    
+                                        switch(escolhaUpgrade){
+                                        case 1:                                       
+                                            break;
+                                        case 2:
+                                            break;
+                                        case 3:
+                                            break;
+                                        default:
+                                            break;
+                                        }
+                                        
+                                    }
                         
+                                }else{
+                                    flagDialogo = false;
+                                }
+                                
+                                
+                            EndMode2D();
+                        EndDrawing();
                     }
-                EndDrawing();
             }else{
                 IniciarMenu();
             }
