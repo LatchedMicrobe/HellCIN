@@ -5,6 +5,40 @@
 #include "menu.h"
 #include "collision.h"
 
+typedef struct Ataque{
+
+    int attackNumber;
+    float attackDamage;
+    int attackLevel;
+
+}Ataque;
+
+typedef struct Protagonista{
+
+    float sanityLevel;
+    Rectangle sourceRec;
+    Rectangle destRec;
+    Ataque attacks[3];
+    int healItemnumber;
+    long int abstractions;
+
+}Protagonista;
+
+typedef struct Enemies{
+
+    float hp;
+    Rectangle destRec;
+    Ataque attack[2];
+    int weakness;
+    bool death;
+
+}Enemies;
+
+
+
+
+
+
 int main(void){
     //Definição de variaveis de tela e jogo
     const int screenWidth = 1600;
@@ -177,7 +211,7 @@ int main(void){
     bool wheelDeath_active = false;
     bool IsWheelDead = false;
 
-
+    //Nosso protagonista
     int stormheadRun_nSprites = 10;
     int stormheadRun_Width = stormheadRun.width - 80;
     int stormheadRun_Heigth = stormheadRun.height/stormheadRun_nSprites;
@@ -186,14 +220,37 @@ int main(void){
     int stormheadAttack_Width = stormheadAttack.width;
     int stormheadAttack_Heigth = stormheadAttack.height/stormheadAttack_nSprites;
 
-    Rectangle stormheadRun_sourceRect = {40.0f, 0.0f, (float)stormheadRun_Width, (float)stormheadRun_Heigth};
-    Rectangle stormheadRun_destRect = {screenWidth/2.0f, screenHeight/2.0f, stormheadRun_Width*1.0f, stormheadRun_Heigth*1.0f };
+    //Dados base do nosso protagonista
+    Protagonista personagemPrincipal;
+
+    personagemPrincipal.sanityLevel = 100.0f;
+    personagemPrincipal.healItemnumber = 0;
+    personagemPrincipal.abstractions = 0;
+
+    Rectangle sourceRec = {40.0f, 0.0f, (float)stormheadRun_Width, (float)stormheadRun_Heigth};
+    personagemPrincipal.sourceRec = sourceRec;
+    Rectangle destRec = {screenWidth/2.0f, screenHeight/2.0f, stormheadRun_Width*1.0f, stormheadRun_Heigth*1.0f };
+    personagemPrincipal.destRec = destRec;
+
+    //Ataques iniciais do protagonista
+    personagemPrincipal.attacks[0].attackNumber = 1;
+    personagemPrincipal.attacks[0].attackLevel = 1;
+    personagemPrincipal.attacks[0].attackDamage = ((personagemPrincipal.attacks[0].attackNumber * personagemPrincipal.attacks[0].attackLevel * 10) + GetRandomValue(1,10)) / 5.0f;
+
+    personagemPrincipal.attacks[1].attackNumber = 2;
+    personagemPrincipal.attacks[1].attackLevel = 1;
+    personagemPrincipal.attacks[1].attackDamage = ((personagemPrincipal.attacks[1].attackNumber * personagemPrincipal.attacks[1].attackLevel * 10) + GetRandomValue(1,10)) / 5.0f;
+
+    personagemPrincipal.attacks[2].attackNumber = 3;
+    personagemPrincipal.attacks[2].attackLevel = 1;
+    personagemPrincipal.attacks[2].attackDamage = ((personagemPrincipal.attacks[2].attackNumber * personagemPrincipal.attacks[2].attackLevel * 10) + GetRandomValue(1,10)) / 5.0f;
+
 
     Rectangle stormheadAttack_sourceRect = {0.0f, 0.0f, (float)stormheadAttack_Width, (float)stormheadAttack_Heigth};
     Rectangle stormheadAttack_destRect = {screenWidth/2.0f - 82, screenHeight/2.0f - 46, stormheadAttack_Width*2.0f, stormheadAttack_Heigth*2.0f };
 
     Camera2D cameraPersonagem = {0};
-    cameraPersonagem.target = (Vector2){stormheadRun_destRect.x + 55.0f, stormheadRun_destRect.y + 25.0f};
+    cameraPersonagem.target = (Vector2){personagemPrincipal.destRec.x + 55.0f, personagemPrincipal.destRec.y + 25.0f};
     cameraPersonagem.offset = (Vector2){screenWidth/2.0f,screenHeight/2.0f};
     cameraPersonagem.rotation = 0.0f;
     cameraPersonagem.zoom = 1.0f;    
@@ -213,7 +270,7 @@ int main(void){
 
     Rectangle retanguloPaulo = {1394.0f, 38.0f, 38.0f, 126.0f};
     Rectangle retanguloPauloConversa = {1344.0f, 38.0f, 100.0f, 140.0f};
-    Rectangle dialogoPaulo = {stormheadRun_destRect.x, stormheadRun_destRect.y + 25.0f, 450.0f, 60.0f};
+    Rectangle dialogoPaulo = {personagemPrincipal.destRec.x, personagemPrincipal.destRec.y + 25.0f, 450.0f, 60.0f};
 
     bool flagDialogo = false, flagLoja = false, flagLoja2 = false;
     int escolhaUpgrade = 0, contadorMovimentacao = 0;
@@ -279,44 +336,44 @@ int main(void){
 
            //Teclas de movimentação 
             if(IsKeyDown(KEY_RIGHT)){
-                stormheadRun_destRect.x +=4;      
+                personagemPrincipal.destRec.x +=4;      
 
-                if(stormheadRun_sourceRect.width < 0){
-                    stormheadRun_sourceRect.width = -1 * stormheadRun_sourceRect.width;
-                    stormheadAttack_sourceRect.width = -1 * stormheadAttack_sourceRect.width;
+                if(personagemPrincipal.sourceRec.width < 0){
+                    personagemPrincipal.sourceRec.width = -1 * personagemPrincipal.sourceRec.width;
+                    personagemPrincipal.sourceRec.width = -1 * personagemPrincipal.sourceRec.width;
                 }
 
-                stormheadRun_sourceRect.y = runningAnimations(&stormheadRun_framecounter, &stormheadRun_framespeed, &stormheadRun_currentframe, stormheadRun_sourceRect.y, stormheadRun_Heigth, stormheadRun_nSprites);
+                personagemPrincipal.sourceRec.y = runningAnimations(&stormheadRun_framecounter, &stormheadRun_framespeed, &stormheadRun_currentframe, personagemPrincipal.sourceRec.y, stormheadRun_Heigth, stormheadRun_nSprites);
             }
             if(IsKeyDown(KEY_LEFT)){
-                stormheadRun_destRect.x -=4;
+                personagemPrincipal.destRec.x -=4;
 
-                if(stormheadRun_sourceRect.width > 0){
-                    stormheadRun_sourceRect.width = -1 * stormheadRun_sourceRect.width;
-                    stormheadAttack_sourceRect.width = -1 * stormheadAttack_sourceRect.width;
+                if(personagemPrincipal.sourceRec.width > 0){
+                    personagemPrincipal.sourceRec.width = -1 * personagemPrincipal.sourceRec.width;
+                    personagemPrincipal.sourceRec.width = -1 * personagemPrincipal.sourceRec.width;
                 }
 
-                stormheadRun_sourceRect.y = runningAnimations(&stormheadRun_framecounter, &stormheadRun_framespeed, &stormheadRun_currentframe, stormheadRun_sourceRect.y, stormheadRun_Heigth, stormheadRun_nSprites);
+                personagemPrincipal.sourceRec.y = runningAnimations(&stormheadRun_framecounter, &stormheadRun_framespeed, &stormheadRun_currentframe, personagemPrincipal.sourceRec.y, stormheadRun_Heigth, stormheadRun_nSprites);
             }
             if(IsKeyDown(KEY_DOWN)){
-                stormheadRun_destRect.y +=4;
+                personagemPrincipal.destRec.y +=4;
 
-                stormheadRun_sourceRect.y = runningAnimations(&stormheadRun_framecounter, &stormheadRun_framespeed, &stormheadRun_currentframe, stormheadRun_sourceRect.y, stormheadRun_Heigth, stormheadRun_nSprites);
+                personagemPrincipal.sourceRec.y = runningAnimations(&stormheadRun_framecounter, &stormheadRun_framespeed, &stormheadRun_currentframe, personagemPrincipal.sourceRec.y, stormheadRun_Heigth, stormheadRun_nSprites);
             }
             if(IsKeyDown(KEY_UP)){
-                stormheadRun_destRect.y -=4;
+                personagemPrincipal.destRec.y -=4;
 
-                stormheadRun_sourceRect.y = runningAnimations(&stormheadRun_framecounter, &stormheadRun_framespeed, &stormheadRun_currentframe, stormheadRun_sourceRect.y, stormheadRun_Heigth, stormheadRun_nSprites);
+                personagemPrincipal.sourceRec.y = runningAnimations(&stormheadRun_framecounter, &stormheadRun_framespeed, &stormheadRun_currentframe, personagemPrincipal.sourceRec.y, stormheadRun_Heigth, stormheadRun_nSprites);
             }
 
 
-            structureCollision(&stormheadRun_destRect,&retanguloPaulo);
+            structureCollision(&personagemPrincipal.destRec,&retanguloPaulo);
 
             //Centralização da camera
-            cameraPersonagem.target = (Vector2) {stormheadRun_destRect.x + 25.0f, stormheadRun_destRect.y + 25.0f};
+            cameraPersonagem.target = (Vector2) {personagemPrincipal.destRec.x + 25.0f, personagemPrincipal.destRec.y + 25.0f};
 
-            dialogoPaulo.x = stormheadRun_destRect.x - 200.0f;
-            dialogoPaulo.y = stormheadRun_destRect.y + 75.0f;
+            dialogoPaulo.x = personagemPrincipal.destRec.x - 200.0f;
+            dialogoPaulo.y = personagemPrincipal.destRec.y + 75.0f;
 
 
             if(beginFlag){
@@ -335,7 +392,7 @@ int main(void){
                         BeginDrawing();
                             StopSound (musicahist);
                             //Definição de bordas do mapa
-                            mapBorders(&stormheadRun_destRect.x,&stormheadRun_destRect.y,stormheadRun_destRect.width,stormheadRun_destRect.height, 38, 38, 1562, 755);
+                            mapBorders(&personagemPrincipal.destRec.x,&personagemPrincipal.destRec.y,personagemPrincipal.destRec.width,personagemPrincipal.destRec.height, 38, 38, 1562, 755);
                             //for(int cnt3 = 0; cnt3 < 8; cnt3++){ Tentei fazer funcionar e n deu rip dms ~~Rodrigo :(
                                 //mapBorders(&wheelRun_destRect[cnt3].x,&wheelRun_destRect[cnt3].y,wheelRun_destRect[cnt3].width,wheelRun_destRect[cnt3].height, 38, 38, 1562, 755);
                             //}
@@ -343,7 +400,7 @@ int main(void){
                                 ClearBackground(BLACK);
                                 DrawTextureV(firstFase, positionMaps, WHITE);
                                     
-                                DrawTexturePro(stormheadRun, stormheadRun_sourceRect, stormheadRun_destRect, origin, rotation, RAYWHITE);
+                                DrawTexturePro(stormheadRun, personagemPrincipal.sourceRec, personagemPrincipal.destRec, origin, rotation, RAYWHITE);
 
                                 wheelRun_framecounter++;
                                 if(contadorTempo >=0 && contadorTempo <= 50){
@@ -390,9 +447,9 @@ int main(void){
                                 }
 
 
-                                if(CheckCollisionRecs(stormheadRun_destRect,retanguloPauloConversa)){
+                                if(CheckCollisionRecs(personagemPrincipal.destRec,retanguloPauloConversa)){
                                     
-                                    DrawText("Pressione E para falar", ((int) stormheadRun_destRect.x - 30.0f), ((int) stormheadRun_destRect.y + 50.0f), 8, WHITE);
+                                    DrawText("Pressione E para falar", ((int) personagemPrincipal.destRec.x - 30.0f), ((int) personagemPrincipal.destRec.y + 50.0f), 8, WHITE);
                                     if(IsKeyDown(KEY_E) && flagDialogo == false){
                                         flagDialogo = true;
                                     }else if(IsKeyDown(KEY_E) && flagDialogo == true){
@@ -413,10 +470,11 @@ int main(void){
                                         }
                                         
                                     }else if(flagDialogo == true && flagLoja == true){
-                                        DrawText("Aqui estão seus upgrades: ",dialogoPaulo.x,dialogoPaulo.y, 8, BLACK);
+                                        DrawText("Aqui estão seus upgrades e itens: ",dialogoPaulo.x,dialogoPaulo.y, 8, BLACK);
                                         DrawText("UPGRADEPLACEHOLDER1", dialogoPaulo.x,dialogoPaulo.y + 8, 8, BLACK); 
                                         DrawText("UPGRADEPLACEHOLDER2",dialogoPaulo.x,dialogoPaulo.y + 16, 8, BLACK);
                                         DrawText("UPGRADEPLACEHOLDER3",dialogoPaulo.x,dialogoPaulo.y + 24, 8, BLACK);
+                                        DrawText("4. Antidepressivos :3 - 100",dialogoPaulo.x,dialogoPaulo.y + 32, 8, BLACK);
 
                                         if(IsKeyDown(KEY_KP_1)){
                                             escolhaUpgrade = 1;
@@ -424,6 +482,8 @@ int main(void){
                                             escolhaUpgrade = 2;
                                         }else if(IsKeyDown(KEY_KP_3)){
                                             escolhaUpgrade = 3;
+                                        }else if(IsKeyDown(KEY_KP_4)){
+                                            escolhaUpgrade = 4;
                                         }
                                     
                                         switch(escolhaUpgrade){
@@ -433,10 +493,18 @@ int main(void){
                                             break;
                                         case 3:
                                             break;
+                                        case 4:
+                                            if(personagemPrincipal.abstractions < 100){
+                                                DrawText("Abstraia mais um pouco",dialogoPaulo.x,dialogoPaulo.y + 40, 8, BLACK);
+                                            }else{
+                                                personagemPrincipal.healItemnumber++;
+                                                personagemPrincipal.abstractions -= 100;
+                                            }
+                                            break;
                                         default:
                                             break;
                                         }
-                                        
+                                        escolhaUpgrade = 0;
                                     }
                         
                                 }else{
@@ -454,14 +522,14 @@ int main(void){
 
                         BeginDrawing();
 
-                            mapBorders(&stormheadRun_destRect.x,&stormheadRun_destRect.y,stormheadRun_destRect.width,stormheadRun_destRect.height, 38, 38, 1562, 755);
+                            mapBorders(&personagemPrincipal.destRec.x,&personagemPrincipal.destRec.y,personagemPrincipal.destRec.width,personagemPrincipal.destRec.height, 38, 38, 1562, 755);
 
                             BeginMode2D(cameraPersonagem);
                                 ClearBackground(BLACK);
                                 
                                 DrawTextureV(secondFase, positionMaps, WHITE);
                                     
-                                DrawTexturePro(stormheadRun, stormheadRun_sourceRect, stormheadRun_destRect, origin, rotation, RAYWHITE);
+                                DrawTexturePro(stormheadRun, personagemPrincipal.sourceRec, personagemPrincipal.destRec, origin, rotation, RAYWHITE);
 
                                 mudRun_framecounter++;
                                 if(contadorTempo >=0 && contadorTempo <= 50){
@@ -507,9 +575,9 @@ int main(void){
                                     DrawTexturePro(mudRun, mudRun_sourceRect, mudRun_destRect[cnt3], enemiesVector2[cnt3], rotation, RAYWHITE);
                                 }
 
-                                if(CheckCollisionRecs(stormheadRun_destRect,retanguloPauloConversa)){
+                                if(CheckCollisionRecs(personagemPrincipal.destRec,retanguloPauloConversa)){
                                     
-                                    DrawText("Pressione E para falar", ((int) stormheadRun_destRect.x - 30.0f), ((int) stormheadRun_destRect.y + 50.0f), 8, WHITE);
+                                    DrawText("Pressione E para falar", ((int) personagemPrincipal.destRec.x - 30.0f), ((int) personagemPrincipal.destRec.y + 50.0f), 8, WHITE);
                                     if(IsKeyDown(KEY_E) && flagDialogo == false){
                                         flagDialogo = true;
                                     }else if(IsKeyDown(KEY_E) && flagDialogo == true){
@@ -530,10 +598,11 @@ int main(void){
                                         }
                                         
                                     }else if(flagDialogo == true && flagLoja2 == true){
-                                        DrawText("Aqui estão seus upgrades: ",dialogoPaulo.x,dialogoPaulo.y, 8, BLACK);
+                                        DrawText("Aqui estão seus upgrades e itens: ",dialogoPaulo.x,dialogoPaulo.y, 8, BLACK);
                                         DrawText("UPGRADEPLACEHOLDER1", dialogoPaulo.x,dialogoPaulo.y + 8, 8, BLACK); 
                                         DrawText("UPGRADEPLACEHOLDER2",dialogoPaulo.x,dialogoPaulo.y + 16, 8, BLACK);
                                         DrawText("UPGRADEPLACEHOLDER3",dialogoPaulo.x,dialogoPaulo.y + 24, 8, BLACK);
+                                        DrawText("4. Antidepressivos :3 - 100",dialogoPaulo.x,dialogoPaulo.y + 32, 8, BLACK);
 
                                         if(IsKeyDown(KEY_KP_1)){
                                             escolhaUpgrade = 1;
@@ -541,6 +610,8 @@ int main(void){
                                             escolhaUpgrade = 2;
                                         }else if(IsKeyDown(KEY_KP_3)){
                                             escolhaUpgrade = 3;
+                                        }else if(IsKeyDown(KEY_KP_4)){
+                                            escolhaUpgrade = 4;
                                         }
                                     
                                         switch(escolhaUpgrade){
@@ -550,10 +621,18 @@ int main(void){
                                             break;
                                         case 3:
                                             break;
+                                        case 4:
+                                            if(personagemPrincipal.abstractions < 100){
+                                                DrawText("Abstraia mais um pouco",dialogoPaulo.x,dialogoPaulo.y + 40, 8, BLACK);
+                                            }else{
+                                                personagemPrincipal.healItemnumber++;
+                                                personagemPrincipal.abstractions -= 100;
+                                            }
+                                            break;
                                         default:
                                             break;
                                         }
-                                        
+                                        escolhaUpgrade = 0;
                                     }
                         
                                 }else{
