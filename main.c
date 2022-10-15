@@ -140,7 +140,7 @@ int main(void){
 
         //Ataques inimigos finais
         mudEnemy[cnt1].attack[0].attackNumber = 1;
-        mudEnemy[cnt1].attack[0].attackLevel = 12;
+        mudEnemy[cnt1].attack[0].attackLevel = 8;
         mudEnemy[cnt1].attack[0].attackDamage = ((mudEnemy[cnt1].attack[0].attackNumber * mudEnemy[cnt1].attack[0].attackLevel * 10) + GetRandomValue(1,50)) / 2.0f;
 
         //Posição inimigos iniciais
@@ -1006,7 +1006,7 @@ int main(void){
 
                                 structureCollision(&personagemPrincipal.destRec,&personagemPrincipal.destRec);
                                 ClearBackground(RAYWHITE);
-                                DrawTextureV(firstFase, positionMaps, WHITE);                                   
+                                DrawTextureV(secondFase, positionMaps, WHITE);                                   
                                 DrawTexturePro(stormheadRun, personagemPrincipal.sourceRec, personagemPrincipal.destRec, origin, rotation, RAYWHITE);
                                 DrawTexturePro(mudRun, mudRun_sourceRect, mudEnemy[inimigoBatalhado].destRec, origin, rotation, RAYWHITE);
                                 DrawRectangleRec(dialogoPaulo,GRAY);
@@ -1042,9 +1042,7 @@ int main(void){
                                             mudEnemy[inimigoBatalhado].hp -= personagemPrincipal.attacks[escolhaBatalha].attackDamage;
 
                                             contadorTempoBatalha++;
-                                            for(contadorTempoBatalha = 0; contadorTempoBatalha < 500; contadorTempoBatalha++){
-                                                DrawText("Bastante dano foi tirado, mas será o bastante?",dialogoPaulo.x,dialogoPaulo.y + 32, 8, BLACK);
-                                            }
+                                            
                                             contadorTempoBatalha = 0;
 
                                             flagYourTurn = false;                       
@@ -1053,9 +1051,7 @@ int main(void){
                                             mudEnemy[inimigoBatalhado].hp -= personagemPrincipal.attacks[escolhaBatalha].attackDamage;
 
                                             contadorTempoBatalha++;
-                                            for(contadorTempoBatalha = 0; contadorTempoBatalha < 500; contadorTempoBatalha++){
-                                                DrawText("Bastante dano foi tirado, mas será o bastante?",dialogoPaulo.x,dialogoPaulo.y + 32, 8, BLACK);
-                                            }
+                                            
                                             contadorTempoBatalha = 0;
 
                                             flagYourTurn = false;                                                                       
@@ -1065,15 +1061,14 @@ int main(void){
                                             mudEnemy[inimigoBatalhado].hp -= personagemPrincipal.attacks[escolhaBatalha].attackDamage;
 
                                             contadorTempoBatalha++;
-                                            for(contadorTempoBatalha = 0; contadorTempoBatalha < 500; contadorTempoBatalha++){
-                                                DrawText("Bastante dano foi tirado, mas será o bastante?",dialogoPaulo.x,dialogoPaulo.y + 32, 8, BLACK);
-                                            }
+                                    
                                             contadorTempoBatalha = 0;
 
                                             flagYourTurn = false;                                    
                                             break;
                                         case 4:
-                                            mudEnemy[inimigoBatalhado].hp -= personagemPrincipal.attacks[escolhaBatalha].attackDamage;
+                                            if(personagemPrincipal.sanityLevel <= 100)
+                                                personagemPrincipal.sanityLevel = (((int) personagemPrincipal.sanityLevel) + 50) % 100;
                                             flagYourTurn = false;
                                             break;
 
@@ -1081,20 +1076,24 @@ int main(void){
                                             break;
                                         }
 
+
                                         escolhaBatalha = 0;
 
                                         if(mudEnemy[inimigoBatalhado].hp <= 0){
                                             mudEnemy[inimigoBatalhado].death = true;
-                                            personagemPrincipal.abstractions += 20;
+
+                                            inimigoBatalhado = -1;
+                                            personagemPrincipal.abstractions += 70;
                                             flagBatalha = false;
+
+                                            mudRun_framecounter = 0;
+                                            contadorTempo = 0;
+
                                         }
                                         
                                     }else{
                                         personagemPrincipal.sanityLevel -= mudEnemy[inimigoBatalhado].attack[0].attackDamage;
 
-                                        for(contadorTempoBatalha = 0; contadorTempoBatalha < 200; contadorTempoBatalha++){
-                                            DrawText("Bastante dano foi tirado, mas será o bastante?",dialogoPaulo.x,dialogoPaulo.y + 32, 8, BLACK);
-                                        }
 
                                         contadorTempoBatalha = 0;
 
@@ -1105,6 +1104,18 @@ int main(void){
                                         flagYourTurn = true;
                                     }
                                 }
+
+                                for(int cnt6 = 0; cnt6 < 8; cnt6++){
+                                    if(mudEnemy[cnt6].death == true){
+                                        contadorMortos++;
+                                        if(contadorMortos == 7){
+                                            flagSecondFaseBuy = true;
+                                            contadorMortos = 0;
+                                        }
+
+                                    }
+                                }
+                                contadorTempoBatalha = 0;
 
                             EndMode2D(); 
 
