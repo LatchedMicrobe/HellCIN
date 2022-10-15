@@ -213,7 +213,7 @@ int main(void){
     for(int cnt1 = 0; cnt1 < 8; cnt1++){
 
         //Dados base inimigos iniciais
-        wheelEnemy[cnt1].hp = 250.0f;
+        wheelEnemy[cnt1].hp = 100.0f;
         wheelEnemy[cnt1].weakness = 1;
         wheelEnemy[cnt1].death = false;
 
@@ -284,9 +284,9 @@ int main(void){
     //Dados base do nosso protagonista
     Protagonista personagemPrincipal;
 
-    personagemPrincipal.sanityLevel = 100.0f;
+    personagemPrincipal.sanityLevel = 250.0f;
     personagemPrincipal.healItemnumber = 0;
-    personagemPrincipal.abstractions = 0;
+    personagemPrincipal.abstractions = 35;
     personagemPrincipal.death = false;
 
     Rectangle sourceRec = {40.0f, 0.0f, (float)stormheadRun_Width, (float)stormheadRun_Heigth};
@@ -560,16 +560,6 @@ int main(void){
                                     }
                                 }
 
-                                for(int cnt6 = 0; cnt6 < 8; cnt6++){
-                                    if(wheelEnemy[cnt6].death == true){
-                                        contadorMortos++;
-                                        if(contadorMortos == 7){
-                                            flagSecondFaseBuy = true;
-                                            contadorMortos = 0;
-                                        }
-
-                                    }
-                                }
                                 //Desenho dos inimigos
                                 for(int cnt3 = 0; cnt3 < 8; cnt3++){
                                     if(wheelEnemy[cnt3].death == false){    
@@ -742,7 +732,7 @@ int main(void){
 
                                         switch(escolhaBatalha){
                                         case 1: 
-                                            wheelEnemy[inimigoBatalhado].hp -= 300;
+                                            wheelEnemy[inimigoBatalhado].hp -= (personagemPrincipal.attacks[escolhaBatalha].attackDamage * 2);
 
                                             flagYourTurn = false;                       
                                             break;
@@ -798,6 +788,16 @@ int main(void){
                                     }
                                 }
 
+                                for(int cnt6 = 0; cnt6 < 8; cnt6++){
+                                    if(wheelEnemy[cnt6].death == true){
+                                        contadorMortos++;
+                                        if(contadorMortos == 7){
+                                            flagSecondFaseBuy = true;
+                                            contadorMortos = 0;
+                                        }
+
+                                    }
+                                }
                                 contadorTempoBatalha = 0;
 
                             EndMode2D(); 
