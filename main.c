@@ -21,6 +21,7 @@ typedef struct Protagonista{
     Ataque attacks[3];
     int healItemnumber;
     int abstractions;
+    bool death;
 
 }Protagonista;
 
@@ -42,13 +43,30 @@ int main(void){
     bool beginFlag = false;
     bool flagFirstFase = false;
     bool flagSecondFase = false;
+    bool flagSecondFaseBuy = false;
+
+    bool flagBatalha = false;
+    bool flagYourTurn = true;
+    bool flagFirstTime = false;
+
+    int contadorMortos = 0;
+    bool flagZerar = false;
 
     InitWindow(screenWidth, screenHeight, "HellCIN");
     InitAudioDevice();
     
     Image tela2_background = LoadImage("./Assets/Grid.png");
+    Image tela3_background = LoadImage("./Assets/Computers II.png");
+    Image tela4_background = LoadImage("./Assets/Office I.png");
+
     Texture2D  tela2_backgroundT = LoadTextureFromImage(tela2_background);
+    Texture2D  tela3_backgroundT = LoadTextureFromImage(tela3_background);
+    Texture2D  tela4_backgroundT = LoadTextureFromImage(tela4_background);
+
     UnloadImage (tela2_background);
+    UnloadImage (tela3_background);
+    UnloadImage (tela4_background);
+
     Vector2 position = { (float)(screenWidth/2 - tela2_background.width/2), (float)(screenHeight/2 - tela2_background.height/2 - 20)};
 
     Sound initialSound = LoadSound("./Assets/Sounds/soundInitial.wav");
@@ -268,7 +286,8 @@ int main(void){
 
     personagemPrincipal.sanityLevel = 100.0f;
     personagemPrincipal.healItemnumber = 0;
-    personagemPrincipal.abstractions = 100;
+    personagemPrincipal.abstractions = 0;
+    personagemPrincipal.death = false;
 
     Rectangle sourceRec = {40.0f, 0.0f, (float)stormheadRun_Width, (float)stormheadRun_Heigth};
     personagemPrincipal.sourceRec = sourceRec;
@@ -279,18 +298,18 @@ int main(void){
     //Ataques iniciais do protagonista
     personagemPrincipal.attacks[0].attackNumber = 1;
     personagemPrincipal.attacks[0].attackLevel = 1;
-    int attackOneRng = GetRandomValue(1,10);
-    personagemPrincipal.attacks[0].attackDamage = ((personagemPrincipal.attacks[0].attackNumber * personagemPrincipal.attacks[0].attackLevel * 10) + attackOneRng) / 5.0f;
+    int attackOneRng = GetRandomValue(1,70);
+    personagemPrincipal.attacks[0].attackDamage = ((personagemPrincipal.attacks[0].attackNumber * personagemPrincipal.attacks[0].attackLevel * 10) + attackOneRng) / 2.0f;
 
     personagemPrincipal.attacks[1].attackNumber = 2;
     personagemPrincipal.attacks[1].attackLevel = 1;
-    int attackTwoRng = GetRandomValue(1,10);
-    personagemPrincipal.attacks[1].attackDamage = ((personagemPrincipal.attacks[1].attackNumber * personagemPrincipal.attacks[1].attackLevel * 10) + attackTwoRng) / 5.0f;
+    int attackTwoRng = GetRandomValue(1,70);
+    personagemPrincipal.attacks[1].attackDamage = ((personagemPrincipal.attacks[1].attackNumber * personagemPrincipal.attacks[1].attackLevel * 10) + attackTwoRng) / 2.0f;
 
     personagemPrincipal.attacks[2].attackNumber = 3;
     personagemPrincipal.attacks[2].attackLevel = 1;
-    int attackThreeRng = GetRandomValue(1,10);
-    personagemPrincipal.attacks[2].attackDamage = ((personagemPrincipal.attacks[2].attackNumber * personagemPrincipal.attacks[2].attackLevel * 10) + attackThreeRng) / 5.0f;
+    int attackThreeRng = GetRandomValue(1,70);
+    personagemPrincipal.attacks[2].attackDamage = ((personagemPrincipal.attacks[2].attackNumber * personagemPrincipal.attacks[2].attackLevel * 10) + attackThreeRng) / 2.0f;
     
     /*
     Rectangle stormheadAttack_sourceRect = {0.0f, 0.0f, (float)stormheadAttack_Width, (float)stormheadAttack_Heigth};
@@ -300,7 +319,7 @@ int main(void){
     cameraPersonagem.target = (Vector2){personagemPrincipal.destRec.x + 55.0f, personagemPrincipal.destRec.y + 25.0f};
     cameraPersonagem.offset = (Vector2){screenWidth/2.0f,screenHeight/2.0f};
     cameraPersonagem.rotation = 0.0f;
-    cameraPersonagem.zoom = 1.0f;    
+    cameraPersonagem.zoom = 3.5f;    
 
     int stormheadRun_framecounter = 0;
     int stormheadRun_framespeed = 8;
@@ -330,8 +349,8 @@ int main(void){
     Rectangle dialogoPaulo = {personagemPrincipal.destRec.x, personagemPrincipal.destRec.y + 25.0f, 450.0f, 60.0f};
 
     bool flagDialogo = false, flagLoja = false, flagLoja2 = false, flagItemComprado = false;
-    int escolhaUpgrade = 0, contadorMovimentacao = 0;
-    long long int contadorTempo = 0;    
+    int escolhaUpgrade = 0, escolhaBatalha = 0, contadorMovimentacao = 0,  inimigoBatalhado = -1;
+    long long int contadorTempo = 0, contadorTempoBatalha = 0;    
 
     SetTargetFPS(60);
 
@@ -373,6 +392,9 @@ int main(void){
                 PlaySound(initialSound);
             }else if(IsKeyDown(KEY_A)){
                 flagSecondFase = true;
+                PlaySound(initialSound);
+            }else if(IsKeyDown(KEY_P)){
+                flagZerar = true;
                 PlaySound(initialSound);
             }
 
@@ -418,12 +440,15 @@ int main(void){
 
             structureCollision(&personagemPrincipal.destRec,&retanguloPaulo);
 
-            for(int cnt5 = 0; cnt5 < 8; cnt5++){
-                if(CheckCollisionRecs(personagemPrincipal.destRec,wheelEnemy[cnt5].destRec)){
-                    //Muda pra tela de batalha
-                    DrawText("HEY LISTEN", ((int) personagemPrincipal.destRec.x - 30.0f), ((int) personagemPrincipal.destRec.y + 50.0f), 8, WHITE);
+            //Colisão com os inimigos
+                for(int cnt5 = 0; cnt5 < 8; cnt5++){
+                    if(wheelEnemy[cnt5].death == false){
+                        if(CheckCollisionRecs(personagemPrincipal.destRec,wheelEnemy[cnt5].destRec)){
+                             flagBatalha = true;
+                             inimigoBatalhado = cnt5;
+                        }
+                    }
                 }
-            }
 
             //Centralização da camera
             cameraPersonagem.target = (Vector2) {personagemPrincipal.destRec.x + 25.0f, personagemPrincipal.destRec.y + 25.0f};
@@ -446,8 +471,23 @@ int main(void){
                             DrawText("bem, veremos...", 100, 420, 30, WHITE);
                             DrawText("Pressione I para sofrer", 100, 500, 30, WHITE);
                         EndDrawing();
+                        wheelRun_framecounter = 0;
+                        contadorTempo = 0;
 
-                    }else if(flagFirstFase == true && flagSecondFase == false){
+                    }else if(personagemPrincipal.death){
+                        BeginDrawing();
+                            PlaySound (musicaF1);
+                            DrawTextureV(tela3_backgroundT, position, WHITE);
+                        EndDrawing();
+
+                    }else if(flagZerar == true){
+
+                        BeginDrawing();
+                            PlaySound (musicaF1);
+                            DrawTextureV(tela4_backgroundT, position, WHITE);
+                        EndDrawing();
+
+                    }else if(flagFirstFase == true && flagSecondFase == false && flagBatalha == false){
                         
                         //Primeira fase
 
@@ -512,16 +552,29 @@ int main(void){
 
                                 //Colisão com os inimigos
                                 for(int cnt5 = 0; cnt5 < 8; cnt5++){
-                                    if(CheckCollisionRecs(personagemPrincipal.destRec,wheelEnemy[cnt5].destRec)){
-                                        //Muda pra tela de batalha
-                                        DrawText("HEY LISTEN", ((int) personagemPrincipal.destRec.x - 30.0f), ((int) personagemPrincipal.destRec.y + 50.0f), 8, WHITE);
+                                    if(wheelEnemy[cnt5].death == false){
+                                        if(CheckCollisionRecs(personagemPrincipal.destRec,wheelEnemy[cnt5].destRec)){
+                                            flagBatalha = true;
+                                            inimigoBatalhado = cnt5;
+                                        }
                                     }
                                 }
 
+                                for(int cnt6 = 0; cnt6 < 8; cnt6++){
+                                    if(wheelEnemy[cnt6].death == true){
+                                        contadorMortos++;
+                                        if(contadorMortos == 7){
+                                            flagSecondFaseBuy = true;
+                                            contadorMortos = 0;
+                                        }
+
+                                    }
+                                }
                                 //Desenho dos inimigos
                                 for(int cnt3 = 0; cnt3 < 8; cnt3++){
-
-                                    DrawTexturePro(wheelRun, wheelRun_sourceRect, wheelEnemy[cnt3].destRec, origin, rotation, RAYWHITE);
+                                    if(wheelEnemy[cnt3].death == false){    
+                                        DrawTexturePro(wheelRun, wheelRun_sourceRect, wheelEnemy[cnt3].destRec, origin, rotation, RAYWHITE);
+                                    }
                                 }
 
                                 //Desenho da barra de vida(fase de testes)
@@ -565,6 +618,10 @@ int main(void){
                                         DrawText("3. Chocolate - 40",dialogoPaulo.x,dialogoPaulo.y + 24, 8, BLACK);
                                         DrawText("4. Antidepressivos :3 - 100",dialogoPaulo.x,dialogoPaulo.y + 32, 8, BLACK);
 
+                                        if(flagSecondFaseBuy == true)
+                                            DrawText("5. Passar de fase",dialogoPaulo.x,dialogoPaulo.y + 48, 8, BLACK);
+                                        
+
                                         //Escolha item da loja(upgrades e item de cura)
                                         if(IsKeyPressed(KEY_KP_1)){
                                             escolhaUpgrade = 1;
@@ -574,8 +631,11 @@ int main(void){
                                             escolhaUpgrade = 3;
                                         }else if(IsKeyPressed(KEY_KP_4)){
                                             escolhaUpgrade = 4;
+                                        }else if(IsKeyPressed(KEY_KP_5)){
+                                            if(flagSecondFaseBuy == true)
+                                                escolhaUpgrade = 5;
                                         }
-;
+
                                         //Logica de compra da loja(Não sei pq mas as abstractions são cortadas pela metade em algum lugar, ent cortei os preços tb ~~ Rodrigo)
                                         switch(escolhaUpgrade){
                                         case 1: 
@@ -585,8 +645,7 @@ int main(void){
                                                 personagemPrincipal.attacks[0].attackDamage = ((personagemPrincipal.attacks[0].attackNumber * personagemPrincipal.attacks[0].attackLevel * 10) + attackOneRng) / 5.0f; 
                                                 
                                                 personagemPrincipal.abstractions -= 50;
-                                                
-                                                
+  
                                                 flagItemComprado = true;
                                             }                                      
                                             break;
@@ -618,6 +677,10 @@ int main(void){
                                                 flagItemComprado = true;
                                             }
                                             break;
+                                        case 5:
+
+                                            flagSecondFase = true;
+                                            break;
 
                                         default:
                                             break;
@@ -638,7 +701,116 @@ int main(void){
                                 
                             EndMode2D();
                         EndDrawing();
-                    }else if(flagFirstFase == true && flagSecondFase == true){
+                    }else if(flagFirstFase == true && flagSecondFase == false && flagBatalha == true){
+                        
+                        BeginDrawing();
+                            BeginMode2D(cameraPersonagem);
+
+                                structureCollision(&personagemPrincipal.destRec,&personagemPrincipal.destRec);
+                                ClearBackground(RAYWHITE);
+                                DrawTextureV(firstFase, positionMaps, WHITE);                                   
+                                DrawTexturePro(stormheadRun, personagemPrincipal.sourceRec, personagemPrincipal.destRec, origin, rotation, RAYWHITE);
+                                DrawTexturePro(wheelRun, wheelRun_sourceRect, wheelEnemy[inimigoBatalhado].destRec, origin, rotation, RAYWHITE);
+                                DrawRectangleRec(dialogoPaulo,GRAY);
+
+                                if(flagFirstTime == false){
+                                    DrawText("Bem vindo ao modo de batalha, vc não pode se mover aqui, mas pode atacar, agora cuidado!", dialogoPaulo.x,dialogoPaulo.y, 8, BLACK); 
+                                    DrawText("Este sistema é por turnos, pressione o numero correspondendente para atacar ou se curar",dialogoPaulo.x,dialogoPaulo.y + 8, 8, BLACK);
+                                    DrawText("Pressione B para batalhar",dialogoPaulo.x,dialogoPaulo.y + 16, 8, BLACK);
+                                    if(IsKeyPressed(KEY_B)){
+                                        flagFirstTime = true;
+                                    }
+
+                                }else{
+                                    if(flagYourTurn){
+
+                                        DrawText("1. Cafeina", dialogoPaulo.x,dialogoPaulo.y, 8, BLACK); 
+                                        DrawText("2. Ponto Extra",dialogoPaulo.x,dialogoPaulo.y + 8, 8, BLACK);
+                                        DrawText("3. Chocolate",dialogoPaulo.x,dialogoPaulo.y + 16, 8, BLACK);
+                                        DrawText("4. Antidepressivo :3",dialogoPaulo.x,dialogoPaulo.y + 24, 8, BLACK);
+
+                                        if(IsKeyPressed(KEY_KP_1)){
+                                            escolhaBatalha = 1;
+                                        }else if(IsKeyPressed(KEY_KP_2)){
+                                            escolhaBatalha = 2;
+                                        }else if(IsKeyPressed(KEY_KP_3)){
+                                            escolhaBatalha = 3;
+                                        }else if(IsKeyPressed(KEY_KP_4)){
+                                            escolhaBatalha = 4;
+                                        }
+
+
+                                        switch(escolhaBatalha){
+                                        case 1: 
+                                            wheelEnemy[inimigoBatalhado].hp -= 300;
+
+                                            flagYourTurn = false;                       
+                                            break;
+                                        case 2:
+                                            wheelEnemy[inimigoBatalhado].hp -= personagemPrincipal.attacks[escolhaBatalha].attackDamage;                                           
+                                            flagYourTurn = false;                                                                       
+                                            break;
+                                            
+                                        case 3:
+                                            wheelEnemy[inimigoBatalhado].hp -= personagemPrincipal.attacks[escolhaBatalha].attackDamage;
+
+                                            
+                                            flagYourTurn = false;                                    
+                                            break;
+                                        case 4:
+                                            if(personagemPrincipal.sanityLevel <= 100)
+                                                personagemPrincipal.sanityLevel = (((int) personagemPrincipal.sanityLevel) + 50) % 100;
+                                            flagYourTurn = false;
+                                            break;
+
+                                        default:
+                                            break;
+                                        }
+                                        
+
+                                        escolhaBatalha = 0;
+
+                                        if(wheelEnemy[inimigoBatalhado].hp <= 0){
+
+                                            wheelEnemy[inimigoBatalhado].death = true;
+
+                                            inimigoBatalhado = -1;
+                                            personagemPrincipal.abstractions += 20;
+                                            flagBatalha = false;
+                                            mudRun_framecounter = 0;
+                                            contadorTempo = 0;
+
+                                        }
+                                        
+                                    }else{
+                                        personagemPrincipal.sanityLevel -= wheelEnemy[inimigoBatalhado].attack[0].attackDamage;
+
+
+                                        contadorTempoBatalha = 0;
+
+                                        if(personagemPrincipal.sanityLevel <= 0){
+
+                                            personagemPrincipal.death = true;
+                                            flagBatalha = false;
+
+                                        }
+                                        flagYourTurn = true;
+                                    }
+                                }
+
+                                contadorTempoBatalha = 0;
+
+                            EndMode2D(); 
+
+                        EndDrawing();
+                    }else if(flagFirstFase == true && flagSecondFase == true && flagBatalha == false){
+
+                        for(int cnt5 = 0; cnt5 < 8; cnt5++){
+                            if(CheckCollisionRecs(personagemPrincipal.destRec,mudEnemy[cnt5].destRec)){
+                                flagBatalha = true;
+                                inimigoBatalhado = cnt5;
+                            }
+                        }
 
                         retanguloPaulo.x = 1490.0f;
                         retanguloPauloConversa.x = 1440.0f;
@@ -701,15 +873,26 @@ int main(void){
 
                                 //Colisão com os inimigos
                                 for(int cnt5 = 0; cnt5 < 8; cnt5++){
-                                    if(CheckCollisionRecs(personagemPrincipal.destRec,mudEnemy[cnt5].destRec)){
-                                        //Muda pra tela de batalha
-                                        DrawText("HEY LISTEN", ((int) personagemPrincipal.destRec.x - 30.0f), ((int) personagemPrincipal.destRec.y + 50.0f), 8, WHITE);
+                                    if(mudEnemy[cnt5].death == false){
+                                        if(CheckCollisionRecs(personagemPrincipal.destRec,mudEnemy[cnt5].destRec)){
+                                            flagBatalha = true;
+                                            inimigoBatalhado = cnt5;
+                                        }
+                                    }else{
+                                        contadorMortos++;
+                                        if(contadorMortos >=8){
+                                            flagZerar = true;
+                                            contadorMortos = 0;
+                                        }
                                     }
                                 }
 
                                 //Desenho dos inimigos
                                 for(int cnt3 = 0; cnt3 < 8; cnt3++){
-                                    DrawTexturePro(mudRun, mudRun_sourceRect, mudEnemy[cnt3].destRec, origin, rotation, RAYWHITE);
+
+                                    if(mudEnemy[cnt3].death == false){
+                                        DrawTexturePro(mudRun, mudRun_sourceRect, mudEnemy[cnt3].destRec, origin, rotation, RAYWHITE);
+                                    }
                                 }
 
                                 //Interação historia / lojinha
@@ -811,11 +994,120 @@ int main(void){
                         
                                 }else{
                                     flagDialogo = false;
-                                    flagItemComprado == false;
+                                    flagItemComprado = false;
                                 }
                                 
                                 
                             EndMode2D();
+                        EndDrawing();
+                    }else if(flagFirstFase == true && flagSecondFase == true && flagBatalha == true){
+                        BeginDrawing();
+                            BeginMode2D(cameraPersonagem);
+
+                                structureCollision(&personagemPrincipal.destRec,&personagemPrincipal.destRec);
+                                ClearBackground(RAYWHITE);
+                                DrawTextureV(firstFase, positionMaps, WHITE);                                   
+                                DrawTexturePro(stormheadRun, personagemPrincipal.sourceRec, personagemPrincipal.destRec, origin, rotation, RAYWHITE);
+                                DrawTexturePro(mudRun, mudRun_sourceRect, mudEnemy[inimigoBatalhado].destRec, origin, rotation, RAYWHITE);
+                                DrawRectangleRec(dialogoPaulo,GRAY);
+
+                                if(flagFirstTime == false){
+                                    DrawText("Bem vindo ao modo de batalha, vc não pode se mover aqui, mas pode atacar, agora cuidado!", dialogoPaulo.x,dialogoPaulo.y, 8, BLACK); 
+                                    DrawText("Este sistema é por turnos, pressione o numero correspondendente para atacar ou se curar",dialogoPaulo.x,dialogoPaulo.y + 8, 8, BLACK);
+                                    DrawText("Pressione B para batalhar",dialogoPaulo.x,dialogoPaulo.y + 16, 8, BLACK);
+                                    if(IsKeyPressed(KEY_B)){
+                                        flagFirstTime = true;
+                                    }
+
+                                }else{
+                                    if(flagYourTurn){
+
+                                        DrawText("1. Cafeina", dialogoPaulo.x,dialogoPaulo.y, 8, BLACK); 
+                                        DrawText("2. Ponto Extra",dialogoPaulo.x,dialogoPaulo.y + 8, 8, BLACK);
+                                        DrawText("3. Chocolate",dialogoPaulo.x,dialogoPaulo.y + 16, 8, BLACK);
+                                        DrawText("4. Antidepressivo :3",dialogoPaulo.x,dialogoPaulo.y + 24, 8, BLACK);
+
+                                        if(IsKeyPressed(KEY_KP_1)){
+                                            escolhaBatalha = 1;
+                                        }else if(IsKeyPressed(KEY_KP_2)){
+                                            escolhaBatalha = 2;
+                                        }else if(IsKeyPressed(KEY_KP_3)){
+                                            escolhaBatalha = 3;
+                                        }else if(IsKeyPressed(KEY_KP_4)){
+                                            escolhaBatalha = 4;
+                                        }
+
+                                        switch(escolhaBatalha){
+                                        case 1: 
+                                            mudEnemy[inimigoBatalhado].hp -= personagemPrincipal.attacks[escolhaBatalha].attackDamage;
+
+                                            contadorTempoBatalha++;
+                                            for(contadorTempoBatalha = 0; contadorTempoBatalha < 500; contadorTempoBatalha++){
+                                                DrawText("Bastante dano foi tirado, mas será o bastante?",dialogoPaulo.x,dialogoPaulo.y + 32, 8, BLACK);
+                                            }
+                                            contadorTempoBatalha = 0;
+
+                                            flagYourTurn = false;                       
+                                            break;
+                                        case 2:
+                                            mudEnemy[inimigoBatalhado].hp -= personagemPrincipal.attacks[escolhaBatalha].attackDamage;
+
+                                            contadorTempoBatalha++;
+                                            for(contadorTempoBatalha = 0; contadorTempoBatalha < 500; contadorTempoBatalha++){
+                                                DrawText("Bastante dano foi tirado, mas será o bastante?",dialogoPaulo.x,dialogoPaulo.y + 32, 8, BLACK);
+                                            }
+                                            contadorTempoBatalha = 0;
+
+                                            flagYourTurn = false;                                                                       
+                                            break;
+                                            
+                                        case 3:
+                                            mudEnemy[inimigoBatalhado].hp -= personagemPrincipal.attacks[escolhaBatalha].attackDamage;
+
+                                            contadorTempoBatalha++;
+                                            for(contadorTempoBatalha = 0; contadorTempoBatalha < 500; contadorTempoBatalha++){
+                                                DrawText("Bastante dano foi tirado, mas será o bastante?",dialogoPaulo.x,dialogoPaulo.y + 32, 8, BLACK);
+                                            }
+                                            contadorTempoBatalha = 0;
+
+                                            flagYourTurn = false;                                    
+                                            break;
+                                        case 4:
+                                            mudEnemy[inimigoBatalhado].hp -= personagemPrincipal.attacks[escolhaBatalha].attackDamage;
+                                            flagYourTurn = false;
+                                            break;
+
+                                        default:
+                                            break;
+                                        }
+
+                                        escolhaBatalha = 0;
+
+                                        if(mudEnemy[inimigoBatalhado].hp <= 0){
+                                            mudEnemy[inimigoBatalhado].death = true;
+                                            personagemPrincipal.abstractions += 20;
+                                            flagBatalha = false;
+                                        }
+                                        
+                                    }else{
+                                        personagemPrincipal.sanityLevel -= mudEnemy[inimigoBatalhado].attack[0].attackDamage;
+
+                                        for(contadorTempoBatalha = 0; contadorTempoBatalha < 200; contadorTempoBatalha++){
+                                            DrawText("Bastante dano foi tirado, mas será o bastante?",dialogoPaulo.x,dialogoPaulo.y + 32, 8, BLACK);
+                                        }
+
+                                        contadorTempoBatalha = 0;
+
+                                        if(personagemPrincipal.sanityLevel <= 0){
+                                            personagemPrincipal.death = true;
+                                            flagBatalha = false;
+                                        }
+                                        flagYourTurn = true;
+                                    }
+                                }
+
+                            EndMode2D(); 
+
                         EndDrawing();
                     }
             }else{
